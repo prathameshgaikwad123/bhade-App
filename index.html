@@ -5,938 +5,698 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#b45309">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="भाडे व्यवस्थापन">
-<title>भाडे व्यवस्थापन</title>
-<link rel="manifest" href="data:application/json,{%22name%22:%22%E0%A4%AD%E0%A4%BE%E0%A4%A1%E0%A5%87%20%E0%A4%B5%E0%A5%8D%E0%A4%AF%E0%A4%B5%E0%A4%B8%E0%A5%8D%E0%A4%A5%E0%A4%BE%E0%A4%AA%E0%A4%A8%22,%22short_name%22:%22%E0%A4%AD%E0%A4%BE%E0%A4%A1%E0%A5%87%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23fef3c7%22,%22theme_color%22:%22%23b45309%22}">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="भाडे">
+<link rel="apple-touch-icon" href="#" id="appleIcon">
+<title>🏠 भाडे व्यवस्थापन</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;900&display=swap');
-
   :root {
-    --saffron: #b45309;
-    --saffron-light: #d97706;
-    --saffron-pale: #fef3c7;
-    --saffron-bg: #fffbeb;
-    --green: #15803d;
-    --green-light: #dcfce7;
-    --red: #dc2626;
-    --red-light: #fee2e2;
-    --blue: #1d4ed8;
-    --blue-light: #dbeafe;
-    --text: #1c1917;
-    --text-light: #78716c;
-    --border: #e7d5a3;
-    --card: #ffffff;
-    --shadow: 0 2px 12px rgba(180,83,9,0.10);
+    --saffron:#b45309;--saffron-light:#d97706;--saffron-pale:#fef3c7;--saffron-bg:#fffbeb;
+    --green:#15803d;--green-light:#dcfce7;--red:#dc2626;--red-light:#fee2e2;
+    --blue:#1d4ed8;--blue-light:#dbeafe;--text:#1c1917;--text-light:#78716c;
+    --border:#e7d5a3;--shadow:0 2px 12px rgba(180,83,9,.10);
   }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:'Noto Sans Devanagari',sans-serif;background:var(--saffron-bg);color:var(--text);min-height:100vh;font-size:16px}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  /* HEADER */
+  .header{background:linear-gradient(135deg,var(--saffron),var(--saffron-light));color:white;padding:16px 16px 12px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+  .header h1{font-size:21px;font-weight:900}
+  .header p{font-size:12px;opacity:.85;margin-top:2px}
 
-  body {
-    font-family: 'Noto Sans Devanagari', sans-serif;
-    background: var(--saffron-bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 16px;
-  }
+  /* TABS */
+  .tabs{display:flex;background:white;border-bottom:3px solid var(--saffron-pale);overflow-x:auto;position:sticky;top:68px;z-index:99;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:1;min-width:70px;padding:10px 6px;text-align:center;font-size:12px;font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-3px;white-space:nowrap;font-family:inherit}
+  .tab.active{color:var(--saffron);border-color:var(--saffron)}
+  .tab .ti{font-size:17px;display:block}
 
-  /* ─── HEADER ─── */
-  .header {
-    background: linear-gradient(135deg, var(--saffron) 0%, var(--saffron-light) 100%);
-    color: white;
-    padding: 18px 16px 14px;
-    text-align: center;
-    position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-  }
-  .header h1 { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; }
-  .header p { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+  /* PAGES */
+  .page{display:none;padding:14px;padding-bottom:90px}
+  .page.active{display:block}
 
-  /* ─── NAV TABS ─── */
-  .tabs {
-    display: flex;
-    background: white;
-    border-bottom: 3px solid var(--saffron-pale);
-    overflow-x: auto;
-    position: sticky; top: 70px; z-index: 99;
-  }
-  .tab {
-    flex: 1; min-width: 80px;
-    padding: 12px 8px;
-    text-align: center;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-light);
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -3px;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  .tab.active { color: var(--saffron); border-color: var(--saffron); }
-  .tab .tab-icon { font-size: 18px; display: block; }
+  /* CARDS */
+  .card{background:white;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow);border:1.5px solid var(--border)}
+  .card-title{font-size:16px;font-weight:700;color:var(--saffron);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 
-  /* ─── PAGES ─── */
-  .page { display: none; padding: 16px; padding-bottom: 80px; }
-  .page.active { display: block; }
+  /* TENANT BTNS */
+  .tenant-btns{display:flex;gap:10px;margin-bottom:14px}
+  .tenant-btn{flex:1;padding:12px 8px;border:2.5px solid var(--border);border-radius:14px;background:white;font-family:inherit;font-size:14px;font-weight:700;color:var(--text-light);cursor:pointer;text-align:center;transition:all .2s}
+  .tenant-btn.selected{border-color:var(--saffron);background:var(--saffron-pale);color:var(--saffron)}
+  .tenant-btn .tn{font-size:16px}.tenant-btn .tr{font-size:11px;margin-top:2px;opacity:.7}
 
-  /* ─── CARDS ─── */
-  .card {
-    background: var(--card);
-    border-radius: 16px;
-    padding: 18px;
-    margin-bottom: 14px;
-    box-shadow: var(--shadow);
-    border: 1.5px solid var(--border);
-  }
-  .card-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--saffron);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  /* FORM */
+  .form-row{margin-bottom:13px}
+  .form-label{display:block;font-size:13px;font-weight:600;color:var(--text-light);margin-bottom:5px}
+  .form-input,.form-select{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:12px;font-family:inherit;font-size:16px;color:var(--text);background:white;-webkit-appearance:none;transition:border-color .2s}
+  .form-input:focus,.form-select:focus{outline:none;border-color:var(--saffron)}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-  /* ─── TENANT SELECTOR ─── */
-  .tenant-btns { display: flex; gap: 10px; margin-bottom: 16px; }
-  .tenant-btn {
-    flex: 1; padding: 14px 8px;
-    border: 2.5px solid var(--border);
-    border-radius: 14px;
-    background: white;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-light);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-  }
-  .tenant-btn.selected {
-    border-color: var(--saffron);
-    background: var(--saffron-pale);
-    color: var(--saffron);
-  }
-  .tenant-btn .t-name { font-size: 17px; }
-  .tenant-btn .t-room { font-size: 11px; margin-top: 2px; opacity: 0.7; }
+  /* CALC BOX */
+  .calc-box{background:var(--saffron-pale);border:2px dashed var(--saffron-light);border-radius:14px;padding:14px;margin:14px 0}
+  .calc-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:14px;border-bottom:1px solid var(--border)}
+  .calc-row:last-child{border:none}
+  .calc-row .lbl{color:var(--text-light);font-weight:500}
+  .calc-row .val{font-weight:700}
+  .calc-row.total{font-size:17px;padding-top:8px;margin-top:4px;border-top:2.5px solid var(--saffron)!important}
+  .calc-row.total .val{color:var(--saffron);font-size:20px}
+  .c-green{color:var(--green)!important}.c-red{color:var(--red)!important}
 
-  /* ─── FORM ─── */
-  .form-row { margin-bottom: 14px; }
-  .form-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-light);
-    margin-bottom: 6px;
-  }
-  .form-input {
-    width: 100%;
-    padding: 13px 14px;
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    font-family: inherit;
-    font-size: 16px;
-    color: var(--text);
-    background: white;
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
-  .form-input:focus { outline: none; border-color: var(--saffron); }
-  .form-select {
-    width: 100%;
-    padding: 13px 14px;
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    font-family: inherit;
-    font-size: 16px;
-    color: var(--text);
-    background: white;
-    -webkit-appearance: none;
-  }
-  .form-select:focus { outline: none; border-color: var(--saffron); }
+  /* BUTTONS */
+  .btn{width:100%;padding:15px;border:none;border-radius:14px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;margin-top:6px;transition:transform .15s}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:var(--saffron);color:white}
+  .btn-green{background:var(--green);color:white}
+  .btn-blue{background:var(--blue);color:white}
+  .btn-outline{background:white;color:var(--saffron);border:2px solid var(--saffron)}
+  .btn-red{background:var(--red);color:white}
+  .btn-sm{width:auto;padding:9px 18px;font-size:14px;border-radius:10px;margin-top:0}
+  .btn-grey{background:#e5e7eb;color:var(--text)}
 
-  /* ─── CALC BOX ─── */
-  .calc-box {
-    background: var(--saffron-pale);
-    border: 2px dashed var(--saffron-light);
-    border-radius: 14px;
-    padding: 16px;
-    margin: 16px 0;
-  }
-  .calc-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 0;
-    font-size: 15px;
-    border-bottom: 1px solid var(--border);
-  }
-  .calc-row:last-child { border-bottom: none; }
-  .calc-row .label { color: var(--text-light); font-weight: 500; }
-  .calc-row .val { font-weight: 700; color: var(--text); }
-  .calc-row.total {
-    font-size: 18px;
-    padding-top: 10px;
-    margin-top: 4px;
-    border-top: 2.5px solid var(--saffron);
-  }
-  .calc-row.total .val { color: var(--saffron); font-size: 22px; }
-  .calc-row.credit .val { color: var(--green); }
-  .calc-row.debit .val { color: var(--red); }
+  /* SUMMARY */
+  .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .sum-box{background:white;border-radius:14px;padding:13px 10px;text-align:center;border:1.5px solid var(--border);box-shadow:var(--shadow)}
+  .sum-box .sl{font-size:11px;color:var(--text-light);font-weight:500;line-height:1.3}
+  .sum-box .sv{font-size:19px;font-weight:900;color:var(--saffron);margin-top:3px}
+  .sum-box.green .sv{color:var(--green)}.sum-box.blue .sv{color:var(--blue)}.sum-box.red .sv{color:var(--red)}
 
-  /* ─── BUTTONS ─── */
-  .btn {
-    width: 100%;
-    padding: 16px;
-    border: none;
-    border-radius: 14px;
-    font-family: inherit;
-    font-size: 17px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-top: 6px;
-  }
-  .btn:active { transform: scale(0.97); }
-  .btn-primary { background: var(--saffron); color: white; }
-  .btn-green { background: var(--green); color: white; }
-  .btn-outline {
-    background: white;
-    color: var(--saffron);
-    border: 2px solid var(--saffron);
-  }
-  .btn-sm {
-    width: auto;
-    padding: 8px 16px;
-    font-size: 14px;
-    border-radius: 10px;
-    margin-top: 0;
-  }
-  .btn-red { background: var(--red); color: white; }
+  /* HISTORY */
+  .hist-item{background:white;border-radius:12px;padding:13px;margin-bottom:9px;border-left:4px solid var(--saffron);box-shadow:var(--shadow)}
+  .hist-item.upi{border-left-color:var(--blue)}
+  .hist-item.old{border-left-color:#9ca3af}
+  .hi-top{display:flex;justify-content:space-between;align-items:center}
+  .hi-month{font-weight:700;font-size:14px}
+  .hi-amt{font-weight:900;font-size:17px;color:var(--green)}
+  .hi-det{font-size:12px;color:var(--text-light);margin-top:5px;line-height:1.6}
+  .badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600}
+  .badge-cash{background:var(--saffron-pale);color:var(--saffron)}
+  .badge-upi{background:var(--blue-light);color:var(--blue)}
+  .badge-old{background:#f3f4f6;color:#6b7280}
 
-  /* ─── SUMMARY BOXES ─── */
-  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-  .summary-box {
-    background: white;
-    border-radius: 14px;
-    padding: 14px 12px;
-    text-align: center;
-    border: 1.5px solid var(--border);
-    box-shadow: var(--shadow);
-  }
-  .summary-box .s-label { font-size: 12px; color: var(--text-light); font-weight: 500; }
-  .summary-box .s-val { font-size: 20px; font-weight: 900; color: var(--saffron); margin-top: 4px; }
-  .summary-box.green .s-val { color: var(--green); }
-  .summary-box.blue .s-val { color: var(--blue); }
+  /* YEAR FILTER */
+  .year-tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px;scrollbar-width:none}
+  .year-tabs::-webkit-scrollbar{display:none}
+  .ytab{padding:7px 16px;border-radius:20px;border:2px solid var(--border);background:white;font-family:inherit;font-size:13px;font-weight:600;color:var(--text-light);cursor:pointer;white-space:nowrap}
+  .ytab.active{background:var(--saffron);color:white;border-color:var(--saffron)}
 
-  /* ─── HISTORY LIST ─── */
-  .history-item {
-    background: white;
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 10px;
-    border-left: 4px solid var(--saffron);
-    box-shadow: var(--shadow);
-  }
-  .history-item.upi { border-left-color: var(--blue); }
-  .history-item .h-top { display: flex; justify-content: space-between; align-items: center; }
-  .history-item .h-month { font-weight: 700; font-size: 15px; }
-  .history-item .h-amount { font-weight: 900; font-size: 18px; color: var(--green); }
-  .history-item .h-detail { font-size: 12px; color: var(--text-light); margin-top: 6px; line-height: 1.6; }
-  .history-item .h-method { font-size: 11px; background: var(--saffron-pale); color: var(--saffron); padding: 2px 8px; border-radius: 6px; font-weight: 600; }
-  .history-item.upi .h-method { background: var(--blue-light); color: var(--blue); }
+  /* YEARLY REPORT */
+  .year-report{background:white;border-radius:14px;padding:14px;margin-bottom:10px;border:1.5px solid var(--border);box-shadow:var(--shadow)}
+  .yr-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .yr-title{font-weight:700;font-size:15px;color:var(--saffron)}
+  .yr-total{font-weight:900;font-size:18px;color:var(--green)}
+  .yr-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--saffron-pale)}
+  .yr-row:last-child{border:none}
 
-  /* ─── TENANT SETUP ─── */
-  .setup-tenant {
-    background: white;
-    border-radius: 16px;
-    padding: 18px;
-    margin-bottom: 14px;
-    border: 2px solid var(--border);
-    box-shadow: var(--shadow);
-  }
-  .setup-tenant h3 { font-size: 16px; color: var(--saffron); margin-bottom: 14px; font-weight: 700; }
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end}
+  .modal-overlay.show{display:flex}
+  .modal{background:white;border-radius:24px 24px 0 0;padding:20px;width:100%;max-height:90vh;overflow-y:auto}
+  .modal-title{font-size:18px;font-weight:700;color:var(--saffron);margin-bottom:16px}
+  .modal-close{float:right;font-size:22px;cursor:pointer;color:var(--text-light);background:none;border:none;font-family:inherit}
 
-  /* ─── BADGE ─── */
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  .badge-green { background: var(--green-light); color: var(--green); }
-  .badge-red { background: var(--red-light); color: var(--red); }
-  .badge-orange { background: var(--saffron-pale); color: var(--saffron); }
+  /* TOAST */
+  .toast{position:fixed;bottom:85px;left:50%;transform:translateX(-50%);background:#1c1917;color:white;padding:11px 22px;border-radius:30px;font-size:14px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;white-space:nowrap;max-width:92vw;text-align:center}
+  .toast.show{opacity:1}
 
-  /* ─── TOAST ─── */
-  .toast {
-    position: fixed;
-    bottom: 90px; left: 50%; transform: translateX(-50%);
-    background: #1c1917;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 30px;
-    font-size: 15px;
-    font-weight: 600;
-    z-index: 999;
-    opacity: 0;
-    transition: opacity 0.3s;
-    white-space: nowrap;
-    max-width: 90vw;
-    text-align: center;
-  }
-  .toast.show { opacity: 1; }
+  .empty{text-align:center;padding:36px 20px;color:var(--text-light)}
+  .empty .ei{font-size:44px;margin-bottom:10px}
+  .divider{height:1px;background:var(--border);margin:12px 0}
+  .sec-label{font-size:12px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;margin-top:4px}
 
-  /* ─── EMPTY STATE ─── */
-  .empty { text-align: center; padding: 40px 20px; color: var(--text-light); }
-  .empty .e-icon { font-size: 48px; margin-bottom: 12px; }
-  .empty p { font-size: 15px; }
-
-  /* ─── DIVIDER ─── */
-  .divider { height: 1px; background: var(--border); margin: 14px 0; }
-
-  /* ─── SECTION LABEL ─── */
-  .section-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 10px;
-    margin-top: 4px;
-  }
-
-  /* ─── INSTALL BANNER ─── */
-  .install-banner {
-    background: linear-gradient(135deg, #1d4ed8, #2563eb);
-    color: white;
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom: 14px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
-  .install-banner .ib-icon { font-size: 28px; flex-shrink: 0; }
-  .install-banner .ib-text { font-size: 13px; line-height: 1.5; }
-  .install-banner .ib-text strong { font-size: 15px; }
-
-  /* responsive */
-  @media (max-width: 360px) {
-    .summary-grid { grid-template-columns: 1fr; }
-    .header h1 { font-size: 19px; }
-  }
+  /* ICON CANVAS (hidden) */
+  #iconCanvas{display:none}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<canvas id="iconCanvas" width="192" height="192"></canvas>
+
 <div class="header">
   <h1>🏠 भाडे व्यवस्थापन</h1>
-  <p>भाडेकरू नोंदणी व देखरेख</p>
+  <p id="headerSub">भाडेकरू नोंदणी व देखरेख</p>
 </div>
 
-<!-- TABS -->
 <div class="tabs">
-  <div class="tab active" onclick="showPage('home')"><span class="tab-icon">🏠</span>मुख्य</div>
-  <div class="tab" onclick="showPage('payment')"><span class="tab-icon">💰</span>भाडे</div>
-  <div class="tab" onclick="showPage('history')"><span class="tab-icon">📋</span>इतिहास</div>
-  <div class="tab" onclick="showPage('settings')"><span class="tab-icon">⚙️</span>सेटिंग</div>
+  <div class="tab active" onclick="showPage('home')"><span class="ti">🏠</span>मुख्य</div>
+  <div class="tab" onclick="showPage('payment')"><span class="ti">💰</span>भाडे</div>
+  <div class="tab" onclick="showPage('history')"><span class="ti">📋</span>इतिहास</div>
+  <div class="tab" onclick="showPage('yearly')"><span class="ti">📊</span>वार्षिक</div>
+  <div class="tab" onclick="showPage('settings')"><span class="ti">⚙️</span>सेटिंग</div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- PAGE: HOME (Dashboard) -->
-<!-- ═══════════════════════════════════════ -->
+<!-- ══════════════ HOME ══════════════ -->
 <div class="page active" id="page-home">
-
-  <div class="install-banner" id="installBanner">
-    <div class="ib-icon">📱</div>
-    <div class="ib-text">
-      <strong>मोबाईलवर App जोडा</strong><br>
-      ब्राउझरमध्ये Share बटण दाबा → "Add to Home Screen" निवडा → App तयार!
-    </div>
+  <div class="sec-label">या महिन्याचा सारांश</div>
+  <div class="sum-grid">
+    <div class="sum-box"><div class="sl">या महिन्याचे उत्पन्न</div><div class="sv" id="hMonthTotal">₹0</div></div>
+    <div class="sum-box green"><div class="sl">एकूण उत्पन्न (सर्व)</div><div class="sv" id="hGrandTotal">₹0</div></div>
   </div>
 
-  <!-- Overall Summary -->
-  <div class="section-label">एकूण सारांश</div>
-  <div class="summary-grid">
-    <div class="summary-box">
-      <div class="s-label">या महिन्याचे उत्पन्न</div>
-      <div class="s-val" id="monthTotal">₹0</div>
+  <div class="sec-label">भाडेकरू स्थिती</div>
+  <div class="card" id="hCard1">
+    <div class="card-title">👤 <span id="hName1">भाडेकरू १</span></div>
+    <div class="sum-grid">
+      <div class="sum-box"><div class="sl">एकूण मिळाले</div><div class="sv" id="hTot1">₹0</div></div>
+      <div class="sum-box blue"><div class="sl">शिल्लक / बाकी</div><div class="sv" id="hBal1">₹0</div></div>
     </div>
-    <div class="summary-box green">
-      <div class="s-label">एकूण उत्पन्न</div>
-      <div class="s-val" id="grandTotal">₹0</div>
+    <div style="font-size:12px;color:var(--text-light)" id="hDep1"></div>
+  </div>
+  <div class="card" id="hCard2">
+    <div class="card-title">👤 <span id="hName2">भाडेकरू २</span></div>
+    <div class="sum-grid">
+      <div class="sum-box"><div class="sl">एकूण मिळाले</div><div class="sv" id="hTot2">₹0</div></div>
+      <div class="sum-box blue"><div class="sl">शिल्लक / बाकी</div><div class="sv" id="hBal2">₹0</div></div>
     </div>
+    <div style="font-size:12px;color:var(--text-light)" id="hDep2"></div>
   </div>
 
-  <!-- Tenant 1 card -->
-  <div class="card" id="homeCard1">
-    <div class="card-title"><span>👤</span> <span id="homeName1">भाडेकरू १</span></div>
-    <div class="summary-grid">
-      <div class="summary-box">
-        <div class="s-label">एकूण भाडे</div>
-        <div class="s-val" id="homeTotal1">₹0</div>
-      </div>
-      <div class="summary-box blue">
-        <div class="s-label">शिल्लक / अधिक</div>
-        <div class="s-val" id="homeBalance1">₹0</div>
-      </div>
-    </div>
-    <div style="font-size:13px; color:var(--text-light)" id="homeDeposit1"></div>
+  <!-- Data safety notice -->
+  <div style="background:var(--blue-light);border-radius:12px;padding:12px;margin-top:4px;font-size:13px;color:var(--blue)">
+    💾 <strong>डेटा सुरक्षित ठेवा:</strong> सेटिंग → Backup घ्या — दर महिन्यात एकदा file save करा!
   </div>
-
-  <!-- Tenant 2 card -->
-  <div class="card" id="homeCard2">
-    <div class="card-title"><span>👤</span> <span id="homeName2">भाडेकरू २</span></div>
-    <div class="summary-grid">
-      <div class="summary-box">
-        <div class="s-label">एकूण भाडे</div>
-        <div class="s-val" id="homeTotal2">₹0</div>
-      </div>
-      <div class="summary-box blue">
-        <div class="s-label">शिल्लक / अधिक</div>
-        <div class="s-val" id="homeBalance2">₹0</div>
-      </div>
-    </div>
-    <div style="font-size:13px; color:var(--text-light)" id="homeDeposit2"></div>
-  </div>
-
 </div>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- PAGE: PAYMENT -->
-<!-- ═══════════════════════════════════════ -->
+<!-- ══════════════ PAYMENT ══════════════ -->
 <div class="page" id="page-payment">
-
   <div class="card">
     <div class="card-title">💰 भाडे नोंद करा</div>
-
-    <!-- Tenant selector -->
     <div class="form-row">
       <div class="form-label">भाडेकरू निवडा</div>
       <div class="tenant-btns">
-        <div class="tenant-btn selected" id="tenBtn1" onclick="selectTenant(1)">
-          <div class="t-name" id="tenBtn1Name">भाडेकरू १</div>
-          <div class="t-room" id="tenBtn1Room">खोली १</div>
+        <div class="tenant-btn selected" id="tBtn1" onclick="selTen(1)">
+          <div class="tn" id="tBtn1N">भाडेकरू १</div><div class="tr" id="tBtn1R">खोली १</div>
         </div>
-        <div class="tenant-btn" id="tenBtn2" onclick="selectTenant(2)">
-          <div class="t-name" id="tenBtn2Name">भाडेकरू २</div>
-          <div class="t-room" id="tenBtn2Room">खोली २</div>
+        <div class="tenant-btn" id="tBtn2" onclick="selTen(2)">
+          <div class="tn" id="tBtn2N">भाडेकरू २</div><div class="tr" id="tBtn2R">खोली २</div>
         </div>
       </div>
     </div>
 
-    <!-- Balance notice -->
-    <div id="balanceNotice" style="display:none; margin-bottom:12px;"></div>
+    <div id="balNotice" style="display:none;margin-bottom:12px"></div>
 
-    <!-- Month / Year -->
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-      <div class="form-row">
-        <label class="form-label">महिना</label>
-        <select class="form-select" id="payMonth"></select>
-      </div>
-      <div class="form-row">
-        <label class="form-label">वर्ष</label>
-        <select class="form-select" id="payYear"></select>
-      </div>
+    <div class="two-col">
+      <div class="form-row"><label class="form-label">महिना</label><select class="form-select" id="payMonth"></select></div>
+      <div class="form-row"><label class="form-label">वर्ष</label><select class="form-select" id="payYear"></select></div>
     </div>
 
-    <!-- Electricity -->
-    <div class="form-row">
-      <label class="form-label">⚡ मागील मीटर रीडिंग (युनिट)</label>
-      <input class="form-input" type="number" id="prevUnit" placeholder="उदा. 1213" oninput="calcBill()">
+    <div class="form-row"><label class="form-label">⚡ मागील मीटर रीडिंग</label><input class="form-input" type="number" id="prevUnit" placeholder="उदा. 1213" oninput="calcBill()"></div>
+    <div class="form-row"><label class="form-label">⚡ आजचे मीटर रीडिंग</label><input class="form-input" type="number" id="currUnit" placeholder="उदा. 1290" oninput="calcBill()"></div>
+    <div class="form-row"><label class="form-label">पैसे कसे दिले?</label>
+      <select class="form-select" id="payMethod"><option value="cash">💵 रोख (Cash)</option><option value="upi">📱 UPI</option></select>
     </div>
-    <div class="form-row">
-      <label class="form-label">⚡ या महिन्याचे मीटर रीडिंग (युनिट)</label>
-      <input class="form-input" type="number" id="currUnit" placeholder="उदा. 1290" oninput="calcBill()">
-    </div>
+    <div class="form-row"><label class="form-label">भाडेकरूने दिलेली रक्कम (₹)</label><input class="form-input" type="number" id="paidAmt" placeholder="उदा. 4000" oninput="calcBill()"></div>
 
-    <!-- Payment -->
-    <div class="form-row">
-      <label class="form-label">रोख / UPI</label>
-      <select class="form-select" id="payMethod">
-        <option value="cash">💵 रोख (Cash)</option>
-        <option value="upi">📱 UPI</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <label class="form-label">भाडेकरूने दिलेली रक्कम (₹)</label>
-      <input class="form-input" type="number" id="paidAmount" placeholder="उदा. 4000" oninput="calcBill()">
-    </div>
-
-    <!-- CALCULATION BOX -->
-    <div class="calc-box" id="calcBox" style="display:none;">
-      <div style="font-size:13px; font-weight:700; color:var(--saffron); margin-bottom:10px;">📊 हिशोब</div>
-      <div class="calc-row"><span class="label">मासिक भाडे</span><span class="val" id="c-rent">₹0</span></div>
-      <div class="calc-row"><span class="label">वीज बिल (<span id="c-units">0</span> युनिट × ₹<span id="c-rate">4</span>)</span><span class="val" id="c-elec">₹0</span></div>
-      <div class="calc-row"><span class="label">पाणी शुल्क</span><span class="val" id="c-water">₹0</span></div>
-      <div class="calc-row credit" id="cr-prev-row" style="display:none;"><span class="label">मागील अधिक रक्कम</span><span class="val" id="c-prev-credit">-₹0</span></div>
-      <div class="calc-row total"><span class="label">देणे आहे</span><span class="val" id="c-due">₹0</span></div>
+    <div class="calc-box" id="calcBox" style="display:none">
+      <div style="font-size:13px;font-weight:700;color:var(--saffron);margin-bottom:8px">📊 हिशोब</div>
+      <div class="calc-row"><span class="lbl">मासिक भाडे</span><span class="val" id="cRent">₹0</span></div>
+      <div class="calc-row"><span class="lbl">वीज (<span id="cUnits">0</span> युनिट × ₹<span id="cRate">4</span>)</span><span class="val" id="cElec">₹0</span></div>
+      <div class="calc-row"><span class="lbl">पाणी शुल्क</span><span class="val" id="cWater">₹0</span></div>
+      <div class="calc-row" id="cPrevRow" style="display:none"><span class="lbl" id="cPrevLbl">मागील अधिक</span><span class="val c-green" id="cPrevVal"></span></div>
+      <div class="calc-row total"><span class="lbl">देणे आहे</span><span class="val" id="cDue">₹0</span></div>
       <div class="divider"></div>
-      <div class="calc-row"><span class="label">भाडेकरूने दिले</span><span class="val" id="c-paid">₹0</span></div>
-      <div class="calc-row credit" id="cr-extra-row" style="display:none;"><span class="label">✅ अधिक दिले (पुढील महिन्यात वजा)</span><span class="val credit" id="c-extra">₹0</span></div>
-      <div class="calc-row debit" id="cr-less-row" style="display:none;"><span class="label">⚠️ कमी दिले (पुढील महिन्यात भरणे)</span><span class="val" id="c-less">₹0</span></div>
+      <div class="calc-row"><span class="lbl">दिले</span><span class="val" id="cPaid">₹0</span></div>
+      <div class="calc-row" id="cExtraRow" style="display:none"><span class="lbl">✅ अधिक दिले</span><span class="val c-green" id="cExtra"></span></div>
+      <div class="calc-row" id="cLessRow" style="display:none"><span class="lbl">⚠️ कमी दिले</span><span class="val c-red" id="cLess"></span></div>
     </div>
 
-    <div class="form-row">
-      <label class="form-label">नोंद (ऐच्छिक)</label>
-      <input class="form-input" type="text" id="payNote" placeholder="काही विशेष असल्यास लिहा...">
-    </div>
-
-    <button class="btn btn-green" onclick="savePayment()">✅ जतन करा (Save)</button>
+    <div class="form-row"><label class="form-label">नोंद (ऐच्छिक)</label><input class="form-input" type="text" id="payNote" placeholder="काही विशेष..."></div>
+    <button class="btn btn-green" onclick="savePayment()">✅ जतन करा</button>
   </div>
-
 </div>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- PAGE: HISTORY -->
-<!-- ═══════════════════════════════════════ -->
+<!-- ══════════════ HISTORY ══════════════ -->
 <div class="page" id="page-history">
-
-  <!-- Tenant selector -->
   <div class="tenant-btns">
-    <div class="tenant-btn selected" id="histBtn1" onclick="selectHistTenant(1)">
-      <div class="t-name" id="histBtn1Name">भाडेकरू १</div>
-    </div>
-    <div class="tenant-btn" id="histBtn2" onclick="selectHistTenant(2)">
-      <div class="t-name" id="histBtn2Name">भाडेकरू २</div>
-    </div>
+    <div class="tenant-btn selected" id="hBtn1" onclick="selHistTen(1)"><div class="tn" id="hBtn1N">भाडेकरू १</div></div>
+    <div class="tenant-btn" id="hBtn2" onclick="selHistTen(2)"><div class="tn" id="hBtn2N">भाडेकरू २</div></div>
   </div>
-
+  <div class="year-tabs" id="histYearTabs"></div>
   <div id="histSummary"></div>
   <div id="histList"></div>
 </div>
 
-<!-- ═══════════════════════════════════════ -->
-<!-- PAGE: SETTINGS -->
-<!-- ═══════════════════════════════════════ -->
+<!-- ══════════════ YEARLY ══════════════ -->
+<div class="page" id="page-yearly">
+  <div class="sec-label">वार्षिक उत्पन्न अहवाल</div>
+  <div id="yearlyReport"></div>
+</div>
+
+<!-- ══════════════ SETTINGS ══════════════ -->
 <div class="page" id="page-settings">
 
-  <div class="card">
-    <div class="card-title">⚙️ सामान्य सेटिंग</div>
-    <div class="form-row">
-      <label class="form-label">वीज दर (प्रति युनिट ₹)</label>
-      <input class="form-input" type="number" id="setElecRate" value="4" step="0.5">
+  <!-- BACKUP/RESTORE -->
+  <div class="card" style="border-color:#bfdbfe">
+    <div class="card-title" style="color:var(--blue)">💾 Backup & Restore</div>
+    <p style="font-size:13px;color:var(--text-light);margin-bottom:12px">डेटा सुरक्षित ठेवण्यासाठी दर महिन्यात Backup घ्या. हे file तुमच्या मोबाईलमध्ये save होईल.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-blue btn-sm" onclick="exportData()">📤 Backup घ्या (Export)</button>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('importFile').click()">📥 Backup Restore करा</button>
     </div>
-    <div class="form-row">
-      <label class="form-label">पाणी शुल्क (दरमहा ₹)</label>
-      <input class="form-input" type="number" id="setWater" value="100">
-    </div>
-    <button class="btn btn-outline btn-sm" onclick="saveSettings()" style="width:auto; margin-top:0;">जतन करा</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <p style="font-size:11px;color:var(--text-light);margin-top:10px">⚠️ Restore केल्यास सध्याचा सर्व डेटा बदलेल</p>
   </div>
 
-  <!-- Tenant 1 Setup -->
-  <div class="setup-tenant">
-    <h3>👤 भाडेकरू १ माहिती</h3>
-    <div class="form-row">
-      <label class="form-label">नाव</label>
-      <input class="form-input" type="text" id="t1Name" placeholder="नाव टाका">
-    </div>
-    <div class="form-row">
-      <label class="form-label">खोली / फ्लॅट नंबर</label>
-      <input class="form-input" type="text" id="t1Room" placeholder="उदा. खोली १">
-    </div>
-    <div class="form-row">
-      <label class="form-label">मासिक भाडे (₹)</label>
-      <input class="form-input" type="number" id="t1Rent" placeholder="उदा. 3500">
-    </div>
-    <div class="form-row">
-      <label class="form-label">भाडे सुरू दिनांक</label>
-      <input class="form-input" type="date" id="t1StartDate">
-    </div>
-    <div class="form-row">
-      <label class="form-label">डिपॉझिट रक्कम (₹)</label>
-      <input class="form-input" type="number" id="t1Deposit" placeholder="उदा. 7000">
-    </div>
+  <!-- PAST DATA IMPORT -->
+  <div class="card" style="border-color:#d1fae5">
+    <div class="card-title" style="color:var(--green)">📖 जुनी नोंद टाका (वहीतून)</div>
+    <p style="font-size:13px;color:var(--text-light);margin-bottom:12px">वहीतील जुना हिशोब येथे एकदा टाका — नंतर सर्व app मध्ये दिसेल</p>
+    <button class="btn btn-green btn-sm" onclick="openOldEntry()">+ जुनी नोंद जोडा</button>
+  </div>
+
+  <!-- GENERAL SETTINGS -->
+  <div class="card">
+    <div class="card-title">⚙️ सामान्य सेटिंग</div>
+    <div class="form-row"><label class="form-label">वीज दर (प्रति युनिट ₹)</label><input class="form-input" type="number" id="setRate" value="4" step="0.5"></div>
+    <div class="form-row"><label class="form-label">पाणी शुल्क (दरमहा ₹)</label><input class="form-input" type="number" id="setWater" value="100"></div>
+    <button class="btn btn-outline btn-sm" onclick="saveSettings()">जतन करा</button>
+  </div>
+
+  <!-- TENANT 1 -->
+  <div class="card">
+    <div class="card-title">👤 भाडेकरू १</div>
+    <div class="form-row"><label class="form-label">नाव</label><input class="form-input" type="text" id="t1n" placeholder="नाव टाका"></div>
+    <div class="form-row"><label class="form-label">खोली / फ्लॅट</label><input class="form-input" type="text" id="t1r" placeholder="उदा. खोली १"></div>
+    <div class="form-row"><label class="form-label">मासिक भाडे (₹)</label><input class="form-input" type="number" id="t1rent" placeholder="3500"></div>
+    <div class="form-row"><label class="form-label">भाडे सुरू दिनांक</label><input class="form-input" type="date" id="t1date"></div>
+    <div class="form-row"><label class="form-label">डिपॉझिट (₹)</label><input class="form-input" type="number" id="t1dep" placeholder="7000"></div>
     <button class="btn btn-primary" onclick="saveTenant(1)">💾 जतन करा</button>
   </div>
 
-  <!-- Tenant 2 Setup -->
-  <div class="setup-tenant">
-    <h3>👤 भाडेकरू २ माहिती</h3>
-    <div class="form-row">
-      <label class="form-label">नाव</label>
-      <input class="form-input" type="text" id="t2Name" placeholder="नाव टाका">
-    </div>
-    <div class="form-row">
-      <label class="form-label">खोली / फ्लॅट नंबर</label>
-      <input class="form-input" type="text" id="t2Room" placeholder="उदा. खोली २">
-    </div>
-    <div class="form-row">
-      <label class="form-label">मासिक भाडे (₹)</label>
-      <input class="form-input" type="number" id="t2Rent" placeholder="उदा. 3500">
-    </div>
-    <div class="form-row">
-      <label class="form-label">भाडे सुरू दिनांक</label>
-      <input class="form-input" type="date" id="t2StartDate">
-    </div>
-    <div class="form-row">
-      <label class="form-label">डिपॉझिट रक्कम (₹)</label>
-      <input class="form-input" type="number" id="t2Deposit" placeholder="उदा. 7000">
-    </div>
+  <!-- TENANT 2 -->
+  <div class="card">
+    <div class="card-title">👤 भाडेकरू २</div>
+    <div class="form-row"><label class="form-label">नाव</label><input class="form-input" type="text" id="t2n" placeholder="नाव टाका"></div>
+    <div class="form-row"><label class="form-label">खोली / फ्लॅट</label><input class="form-input" type="text" id="t2r" placeholder="उदा. खोली २"></div>
+    <div class="form-row"><label class="form-label">मासिक भाडे (₹)</label><input class="form-input" type="number" id="t2rent" placeholder="3500"></div>
+    <div class="form-row"><label class="form-label">भाडे सुरू दिनांक</label><input class="form-input" type="date" id="t2date"></div>
+    <div class="form-row"><label class="form-label">डिपॉझिट (₹)</label><input class="form-input" type="number" id="t2dep" placeholder="7000"></div>
     <button class="btn btn-primary" onclick="saveTenant(2)">💾 जतन करा</button>
   </div>
 
-  <div class="card" style="border-color:var(--red-light);">
-    <div class="card-title" style="color:var(--red);">⚠️ सर्व डेटा मिटवा</div>
-    <p style="font-size:13px; color:var(--text-light); margin-bottom:12px;">सर्व भाडे नोंदी आणि भाडेकरू माहिती मिटेल. हे पूर्ववत होणार नाही!</p>
+  <div class="card" style="border-color:var(--red-light)">
+    <div class="card-title" style="color:var(--red)">⚠️ सर्व डेटा मिटवा</div>
+    <p style="font-size:13px;color:var(--text-light);margin-bottom:10px">हे पूर्ववत होणार नाही! आधी Backup घ्या.</p>
     <button class="btn btn-red" onclick="clearAll()">🗑️ सर्व मिटवा</button>
   </div>
+</div>
 
+<!-- ══════════════ OLD ENTRY MODAL ══════════════ -->
+<div class="modal-overlay" id="oldModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeOldEntry()">✕</button>
+    <div class="modal-title">📖 जुनी नोंद जोडा</div>
+    <div class="form-row">
+      <div class="form-label">भाडेकरू</div>
+      <div class="tenant-btns">
+        <div class="tenant-btn selected" id="omBtn1" onclick="selOldTen(1)"><div class="tn" id="omBtn1N">भाडेकरू १</div></div>
+        <div class="tenant-btn" id="omBtn2" onclick="selOldTen(2)"><div class="tn" id="omBtn2N">भाडेकरू २</div></div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="form-row"><label class="form-label">महिना</label><select class="form-select" id="omMonth"></select></div>
+      <div class="form-row"><label class="form-label">वर्ष</label><select class="form-select" id="omYear"></select></div>
+    </div>
+    <div class="form-row"><label class="form-label">भाडे (₹)</label><input class="form-input" type="number" id="omRent" placeholder="3500"></div>
+    <div class="form-row"><label class="form-label">वीज बिल (₹) — थेट रक्कम</label><input class="form-input" type="number" id="omElec" placeholder="308"></div>
+    <div class="form-row"><label class="form-label">पाणी (₹)</label><input class="form-input" type="number" id="omWater" placeholder="100"></div>
+    <div class="form-row"><label class="form-label">एकूण मिळाले (₹)</label><input class="form-input" type="number" id="omPaid" placeholder="3908"></div>
+    <div class="form-row"><label class="form-label">पैसे कसे दिले?</label>
+      <select class="form-select" id="omMethod"><option value="cash">💵 रोख</option><option value="upi">📱 UPI</option></select>
+    </div>
+    <div class="form-row"><label class="form-label">नोंद (ऐच्छिक)</label><input class="form-input" type="text" id="omNote" placeholder="वहीतून आणली"></div>
+    <button class="btn btn-green" onclick="saveOldEntry()" style="margin-top:8px">✅ जोडा</button>
+    <button class="btn btn-grey" onclick="closeOldEntry()" style="margin-top:6px">रद्द करा</button>
+  </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════
-// STATE & STORAGE
-// ═══════════════════════════════════════════════════
-const MONTHS_MR = ['जानेवारी','फेब्रुवारी','मार्च','एप्रिल','मे','जून','जुलै','ऑगस्ट','सप्टेंबर','ऑक्टोबर','नोव्हेंबर','डिसेंबर'];
+// ═══════════ CONSTANTS ═══════════
+const MR=['जानेवारी','फेब्रुवारी','मार्च','एप्रिल','मे','जून','जुलै','ऑगस्ट','सप्टेंबर','ऑक्टोबर','नोव्हेंबर','डिसेंबर'];
 
-function load(key, def) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; }
-}
-function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+// ═══════════ STATE ═══════════
+function ld(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}}
+function sv(k,v){localStorage.setItem(k,JSON.stringify(v))}
 
-let settings = load('settings', { elecRate: 4, water: 100 });
-let tenants = load('tenants', [
-  { name: 'भाडेकरू १', room: 'खोली १', rent: 3500, deposit: 0, startDate: '', balance: 0 },
-  { name: 'भाडेकरू २', room: 'खोली २', rent: 3500, deposit: 0, startDate: '', balance: 0 }
+let cfg=ld('cfg',{elecRate:4,water:100});
+let tenants=ld('tenants',[
+  {name:'भाडेकरू १',room:'खोली १',rent:3500,deposit:0,startDate:'',balance:0},
+  {name:'भाडेकरू २',room:'खोली २',rent:3500,deposit:0,startDate:'',balance:0}
 ]);
-let payments = load('payments', [[], []]); // payments[0] = tenant1, payments[1] = tenant2
+let payments=ld('payments',[[],[]]);
+let selT=1,histT=1,oldT=1,histYear='all';
 
-let selTenant = 1; // 1 or 2
-let histTenant = 1;
+// ═══════════ ICON GENERATION ═══════════
+function makeIcon(){
+  const c=document.getElementById('iconCanvas');
+  const ctx=c.getContext('2d');
+  // Background
+  const g=ctx.createLinearGradient(0,0,192,192);
+  g.addColorStop(0,'#b45309');g.addColorStop(1,'#d97706');
+  ctx.fillStyle=g;
+  ctx.beginPath();ctx.roundRect(0,0,192,192,32);ctx.fill();
+  // House emoji style
+  ctx.font='110px serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('🏠',96,100);
+  return c.toDataURL('image/png');
+}
 
-// ═══════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════
-window.onload = function() {
-  populateMonthYear();
-  loadSettings();
-  loadTenantForms();
-  updateTenantBtns();
-  renderHome();
-  selectTenant(1);
-  selectHistTenant(1);
+// ═══════════ INIT ═══════════
+window.onload=function(){
+  fillMonthYear('payMonth','payYear');
+  fillMonthYear('omMonth','omYear');
+  loadCfg();loadTenantForms();updateBtns();
+  renderHome();selTen(1);selHistTen(1);
+  renderYearly();
+  // Set apple touch icon
+  const iconData=makeIcon();
+  const link=document.createElement('link');
+  link.rel='apple-touch-icon';link.href=iconData;
+  document.head.appendChild(link);
 };
 
-function populateMonthYear() {
-  const mSel = document.getElementById('payMonth');
-  const ySel = document.getElementById('payYear');
-  MONTHS_MR.forEach((m, i) => {
-    const opt = document.createElement('option');
-    opt.value = i; opt.textContent = m;
-    mSel.appendChild(opt);
-  });
-  const now = new Date();
-  mSel.value = now.getMonth();
-  const yr = now.getFullYear();
-  for (let y = yr-2; y <= yr+1; y++) {
-    const opt = document.createElement('option');
-    opt.value = y; opt.textContent = y;
-    ySel.appendChild(opt);
+function fillMonthYear(mId,yId){
+  const ms=document.getElementById(mId),ys=document.getElementById(yId);
+  ms.innerHTML='';ys.innerHTML='';
+  MR.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=m;ms.appendChild(o)});
+  const now=new Date();ms.value=now.getMonth();
+  for(let y=2018;y<=now.getFullYear()+1;y++){
+    const o=document.createElement('option');o.value=y;o.textContent=y;ys.appendChild(o);
   }
-  ySel.value = yr;
+  ys.value=now.getFullYear();
 }
 
-function loadSettings() {
-  document.getElementById('setElecRate').value = settings.elecRate;
-  document.getElementById('setWater').value = settings.water;
+function loadCfg(){document.getElementById('setRate').value=cfg.elecRate;document.getElementById('setWater').value=cfg.water;}
+function loadTenantForms(){
+  [1,2].forEach(n=>{
+    const t=tenants[n-1];
+    document.getElementById('t'+n+'n').value=t.name||'';
+    document.getElementById('t'+n+'r').value=t.room||'';
+    document.getElementById('t'+n+'rent').value=t.rent||'';
+    document.getElementById('t'+n+'dep').value=t.deposit||'';
+    document.getElementById('t'+n+'date').value=t.startDate||'';
+  });
 }
-
-function loadTenantForms() {
-  ['1','2'].forEach((n, i) => {
-    const t = tenants[i];
-    document.getElementById('t'+n+'Name').value = t.name || '';
-    document.getElementById('t'+n+'Room').value = t.room || '';
-    document.getElementById('t'+n+'Rent').value = t.rent || '';
-    document.getElementById('t'+n+'Deposit').value = t.deposit || '';
-    document.getElementById('t'+n+'StartDate').value = t.startDate || '';
+function updateBtns(){
+  [1,2].forEach(n=>{
+    const t=tenants[n-1];
+    document.getElementById('tBtn'+n+'N').textContent=t.name;
+    document.getElementById('tBtn'+n+'R').textContent=t.room;
+    document.getElementById('hBtn'+n+'N').textContent=t.name;
+    document.getElementById('omBtn'+n+'N').textContent=t.name;
+    document.getElementById('hName'+n).textContent=t.name;
   });
 }
 
-function updateTenantBtns() {
-  [1,2].forEach(n => {
-    const t = tenants[n-1];
-    document.getElementById('tenBtn'+n+'Name').textContent = t.name;
-    document.getElementById('tenBtn'+n+'Room').textContent = t.room;
-    document.getElementById('histBtn'+n+'Name').textContent = t.name;
-    document.getElementById('homeName'+n).textContent = t.name;
-  });
-}
-
-// ═══════════════════════════════════════════════════
-// PAGE NAVIGATION
-// ═══════════════════════════════════════════════════
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+// ═══════════ PAGE NAV ═══════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  const tabs = ['home','payment','history','settings'];
+  const tabs=['home','payment','history','yearly','settings'];
   document.querySelectorAll('.tab')[tabs.indexOf(id)].classList.add('active');
-  if (id === 'home') renderHome();
-  if (id === 'history') renderHistory();
+  if(id==='home')renderHome();
+  if(id==='history')renderHistory();
+  if(id==='yearly')renderYearly();
 }
 
-// ═══════════════════════════════════════════════════
-// TENANT SELECT (PAYMENT)
-// ═══════════════════════════════════════════════════
-function selectTenant(n) {
-  selTenant = n;
-  document.getElementById('tenBtn1').classList.toggle('selected', n===1);
-  document.getElementById('tenBtn2').classList.toggle('selected', n===2);
-  showBalanceNotice();
-  calcBill();
+// ═══════════ PAYMENT PAGE ═══════════
+function selTen(n){
+  selT=n;
+  document.getElementById('tBtn1').classList.toggle('selected',n===1);
+  document.getElementById('tBtn2').classList.toggle('selected',n===2);
+  showBalNotice();calcBill();
 }
 
-function showBalanceNotice() {
-  const t = tenants[selTenant-1];
-  const nb = document.getElementById('balanceNotice');
-  if (t.balance > 0) {
-    nb.style.display = 'block';
-    nb.innerHTML = `<div style="background:var(--green-light);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--green);font-weight:600;">
-      ✅ मागील महिन्याची अधिक रक्कम: <strong>₹${t.balance}</strong> — या महिन्याच्या भाड्यातून वजा होईल
-    </div>`;
-  } else if (t.balance < 0) {
-    nb.style.display = 'block';
-    nb.innerHTML = `<div style="background:var(--red-light);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--red);font-weight:600;">
-      ⚠️ मागील महिन्याची बाकी रक्कम: <strong>₹${Math.abs(t.balance)}</strong> — या महिन्यात जोडली जाईल
-    </div>`;
-  } else {
-    nb.style.display = 'none';
-  }
+function showBalNotice(){
+  const t=tenants[selT-1],nb=document.getElementById('balNotice');
+  if(t.balance>0){
+    nb.style.display='block';
+    nb.innerHTML=`<div style="background:var(--green-light);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--green);font-weight:600">✅ मागील अधिक रक्कम: <strong>₹${t.balance}</strong> — या महिन्यातून वजा होईल</div>`;
+  } else if(t.balance<0){
+    nb.style.display='block';
+    nb.innerHTML=`<div style="background:var(--red-light);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--red);font-weight:600">⚠️ मागील बाकी: <strong>₹${Math.abs(t.balance)}</strong> — या महिन्यात जोडेल</div>`;
+  } else nb.style.display='none';
 }
 
-// ═══════════════════════════════════════════════════
-// CALCULATION
-// ═══════════════════════════════════════════════════
-function calcBill() {
-  const t = tenants[selTenant-1];
-  const prev = parseFloat(document.getElementById('prevUnit').value) || 0;
-  const curr = parseFloat(document.getElementById('currUnit').value) || 0;
-  const paid = parseFloat(document.getElementById('paidAmount').value) || 0;
-  const units = Math.max(0, curr - prev);
-  const elecAmt = units * settings.elecRate;
-  const waterAmt = settings.water;
-  const rentAmt = t.rent || 0;
-  const prevBalance = t.balance || 0; // positive = credit, negative = due
-  const due = rentAmt + elecAmt + waterAmt - prevBalance;
-  const diff = paid - due;
+function calcBill(){
+  const t=tenants[selT-1];
+  if(!t.rent){document.getElementById('calcBox').style.display='none';return;}
+  const prev=parseFloat(document.getElementById('prevUnit').value)||0;
+  const curr=parseFloat(document.getElementById('currUnit').value)||0;
+  const paid=parseFloat(document.getElementById('paidAmt').value)||0;
+  const units=Math.max(0,curr-prev);
+  const elec=units*cfg.elecRate,water=cfg.water,rent=t.rent;
+  const bal=t.balance||0; // +credit -due
+  const due=rent+elec+water-bal;
+  const diff=paid-due;
 
-  if (!rentAmt) { document.getElementById('calcBox').style.display = 'none'; return; }
+  document.getElementById('calcBox').style.display='block';
+  document.getElementById('cRent').textContent='₹'+rent;
+  document.getElementById('cUnits').textContent=units;
+  document.getElementById('cRate').textContent=cfg.elecRate;
+  document.getElementById('cElec').textContent='₹'+elec;
+  document.getElementById('cWater').textContent='₹'+water;
+  document.getElementById('cDue').textContent='₹'+Math.round(due);
+  document.getElementById('cPaid').textContent='₹'+paid;
 
-  document.getElementById('calcBox').style.display = 'block';
-  document.getElementById('c-rent').textContent = '₹'+rentAmt;
-  document.getElementById('c-units').textContent = units;
-  document.getElementById('c-rate').textContent = settings.elecRate;
-  document.getElementById('c-elec').textContent = '₹'+elecAmt;
-  document.getElementById('c-water').textContent = '₹'+waterAmt;
-  document.getElementById('c-due').textContent = '₹'+Math.max(0,due);
-  document.getElementById('c-paid').textContent = '₹'+paid;
+  const pr=document.getElementById('cPrevRow');
+  if(bal!==0){
+    pr.style.display='flex';
+    if(bal>0){document.getElementById('cPrevLbl').textContent='मागील अधिक वजा';document.getElementById('cPrevVal').textContent='-₹'+bal;}
+    else{document.getElementById('cPrevLbl').textContent='मागील बाकी जोड';document.getElementById('cPrevVal').textContent='+₹'+Math.abs(bal);document.getElementById('cPrevVal').className='val c-red';}
+  } else pr.style.display='none';
 
-  const prevRow = document.getElementById('cr-prev-row');
-  if (prevBalance > 0) {
-    prevRow.style.display = 'flex';
-    document.getElementById('c-prev-credit').textContent = '-₹'+prevBalance;
-  } else if (prevBalance < 0) {
-    prevRow.style.display = 'flex';
-    document.getElementById('c-prev-credit').textContent = '+₹'+Math.abs(prevBalance)+' (बाकी)';
-  } else {
-    prevRow.style.display = 'none';
-  }
-
-  document.getElementById('cr-extra-row').style.display = diff > 0 ? 'flex' : 'none';
-  document.getElementById('cr-less-row').style.display = diff < 0 ? 'flex' : 'none';
-  if (diff > 0) document.getElementById('c-extra').textContent = '₹'+diff;
-  if (diff < 0) document.getElementById('c-less').textContent = '₹'+Math.abs(diff);
+  document.getElementById('cExtraRow').style.display=diff>0?'flex':'none';
+  document.getElementById('cLessRow').style.display=diff<0?'flex':'none';
+  if(diff>0)document.getElementById('cExtra').textContent='₹'+Math.round(diff)+' (पुढील महिन्यात वजा)';
+  if(diff<0)document.getElementById('cLess').textContent='₹'+Math.round(Math.abs(diff))+' (पुढील महिन्यात जोड)';
 }
 
-// ═══════════════════════════════════════════════════
-// SAVE PAYMENT
-// ═══════════════════════════════════════════════════
-function savePayment() {
-  const t = tenants[selTenant-1];
-  const prev = parseFloat(document.getElementById('prevUnit').value) || 0;
-  const curr = parseFloat(document.getElementById('currUnit').value) || 0;
-  const paid = parseFloat(document.getElementById('paidAmount').value) || 0;
-  const method = document.getElementById('payMethod').value;
-  const note = document.getElementById('payNote').value.trim();
-  const month = parseInt(document.getElementById('payMonth').value);
-  const year = parseInt(document.getElementById('payYear').value);
+function savePayment(){
+  const t=tenants[selT-1];
+  if(!t.rent){showToast('⚠️ आधी सेटिंगमध्ये भाडे भरा');return;}
+  const paid=parseFloat(document.getElementById('paidAmt').value)||0;
+  if(!paid){showToast('⚠️ दिलेली रक्कम भरा');return;}
+  const prev=parseFloat(document.getElementById('prevUnit').value)||0;
+  const curr=parseFloat(document.getElementById('currUnit').value)||0;
+  const units=Math.max(0,curr-prev);
+  const elec=units*cfg.elecRate,water=cfg.water,rent=t.rent;
+  const bal=t.balance||0;
+  const due=rent+elec+water-bal;
+  const diff=paid-due;
+  const month=parseInt(document.getElementById('payMonth').value);
+  const year=parseInt(document.getElementById('payYear').value);
 
-  if (!t.rent) { showToast('⚠️ आधी सेटिंगमध्ये भाडे रक्कम भरा'); return; }
-  if (!paid) { showToast('⚠️ भाडेकरूने दिलेली रक्कम भरा'); return; }
+  const rec={id:Date.now(),month,year,prevUnit:prev,currUnit:curr,units,rent,elec,water,prevBalance:bal,due:Math.round(due),paid,diff:Math.round(diff),method:document.getElementById('payMethod').value,note:document.getElementById('payNote').value.trim(),date:new Date().toLocaleDateString('mr-IN'),isOld:false};
+  payments[selT-1].push(rec);sv('payments',payments);
+  tenants[selT-1].balance=Math.round(diff);sv('tenants',tenants);
 
-  const units = Math.max(0, curr - prev);
-  const elecAmt = units * settings.elecRate;
-  const waterAmt = settings.water;
-  const prevBalance = t.balance || 0;
-  const due = t.rent + elecAmt + waterAmt - prevBalance;
-  const diff = paid - due;
+  document.getElementById('prevUnit').value=curr;
+  document.getElementById('currUnit').value='';
+  document.getElementById('paidAmt').value='';
+  document.getElementById('payNote').value='';
+  document.getElementById('calcBox').style.display='none';
+  showBalNotice();renderHome();
 
-  const record = {
-    id: Date.now(),
-    month, year,
-    prevUnit: prev, currUnit: curr, units,
-    rent: t.rent, elec: elecAmt, water: waterAmt,
-    prevBalance, due, paid, diff,
-    method, note,
-    date: new Date().toLocaleDateString('mr-IN')
-  };
-
-  payments[selTenant-1].push(record);
-  save('payments', payments);
-
-  // Update balance
-  tenants[selTenant-1].balance = diff; // positive = credit (overpaid), negative = still owed
-  save('tenants', tenants);
-
-  // Reset form
-  document.getElementById('prevUnit').value = curr; // auto-fill for next month
-  document.getElementById('currUnit').value = '';
-  document.getElementById('paidAmount').value = '';
-  document.getElementById('payNote').value = '';
-  document.getElementById('calcBox').style.display = 'none';
-  showBalanceNotice();
-
-  const msg = diff > 0 ? `✅ जतन झाले! ₹${diff} अधिक — पुढील महिन्यात वजा होईल` :
-              diff < 0 ? `✅ जतन झाले! ₹${Math.abs(diff)} बाकी — पुढील महिन्यात जोडले जाईल` :
-              '✅ भाडे नोंद झाली!';
+  const msg=diff>0?`✅ जतन! ₹${Math.round(diff)} अधिक`:diff<0?`✅ जतन! ₹${Math.round(Math.abs(diff))} बाकी`:'✅ भाडे नोंद झाली!';
   showToast(msg);
-  renderHome();
 }
 
-// ═══════════════════════════════════════════════════
-// HISTORY
-// ═══════════════════════════════════════════════════
-function selectHistTenant(n) {
-  histTenant = n;
-  document.getElementById('histBtn1').classList.toggle('selected', n===1);
-  document.getElementById('histBtn2').classList.toggle('selected', n===2);
+// ═══════════ HISTORY ═══════════
+function selHistTen(n){
+  histT=n;histYear='all';
+  document.getElementById('hBtn1').classList.toggle('selected',n===1);
+  document.getElementById('hBtn2').classList.toggle('selected',n===2);
   renderHistory();
 }
 
-function renderHistory() {
-  const recs = payments[histTenant-1] || [];
-  const t = tenants[histTenant-1];
-  const total = recs.reduce((s,r) => s+r.paid, 0);
-  const sumDiv = document.getElementById('histSummary');
-  sumDiv.innerHTML = `
-    <div class="summary-grid">
-      <div class="summary-box">
-        <div class="s-label">एकूण नोंदी</div>
-        <div class="s-val">${recs.length}</div>
-      </div>
-      <div class="summary-box green">
-        <div class="s-label">एकूण मिळाले</div>
-        <div class="s-val">₹${total}</div>
-      </div>
+function renderHistory(){
+  const recs=payments[histT-1]||[];
+  const t=tenants[histT-1];
+  // Year tabs
+  const years=[...new Set(recs.map(r=>r.year))].sort((a,b)=>b-a);
+  const ytDiv=document.getElementById('histYearTabs');
+  ytDiv.innerHTML=`<button class="ytab ${histYear==='all'?'active':''}" onclick="setHistYear('all')">सर्व</button>`
+    +years.map(y=>`<button class="ytab ${histYear==y?'active':''}" onclick="setHistYear(${y})">${y}</button>`).join('');
+
+  const filtered=histYear==='all'?recs:recs.filter(r=>r.year==histYear);
+  const total=filtered.reduce((s,r)=>s+r.paid,0);
+  document.getElementById('histSummary').innerHTML=`
+    <div class="sum-grid">
+      <div class="sum-box"><div class="sl">नोंदी</div><div class="sv">${filtered.length}</div></div>
+      <div class="sum-box green"><div class="sl">एकूण मिळाले</div><div class="sv">₹${total}</div></div>
     </div>
-    ${t.deposit ? `<div style="font-size:13px;color:var(--text-light);margin-bottom:8px;">💼 डिपॉझिट: ₹${t.deposit} | भाडे सुरू: ${t.startDate||'—'}</div>` : ''}
+    ${t.deposit?`<div style="font-size:12px;color:var(--text-light);margin-bottom:8px">💼 डिपॉझिट: ₹${t.deposit}  |  सुरू: ${t.startDate||'—'}</div>`:''}
   `;
-
-  const listDiv = document.getElementById('histList');
-  if (!recs.length) {
-    listDiv.innerHTML = `<div class="empty"><div class="e-icon">📋</div><p>अजून कोणतीही नोंद नाही</p></div>`;
-    return;
-  }
-
-  listDiv.innerHTML = [...recs].reverse().map(r => `
-    <div class="history-item ${r.method==='upi'?'upi':''}">
-      <div class="h-top">
-        <div>
-          <span class="h-month">${MONTHS_MR[r.month]} ${r.year}</span>
-          <span class="h-method">${r.method==='upi'?'📱 UPI':'💵 रोख'}</span>
-        </div>
-        <div class="h-amount">₹${r.paid}</div>
+  const ld=document.getElementById('histList');
+  if(!filtered.length){ld.innerHTML=`<div class="empty"><div class="ei">📋</div><p>नोंदी नाहीत</p></div>`;return;}
+  ld.innerHTML=[...filtered].reverse().map(r=>`
+    <div class="hist-item ${r.isOld?'old':r.method==='upi'?'upi':''}">
+      <div class="hi-top">
+        <div><span class="hi-month">${MR[r.month]} ${r.year}</span> <span class="badge ${r.isOld?'badge-old':r.method==='upi'?'badge-upi':'badge-cash'}">${r.isOld?'📖 वही':r.method==='upi'?'📱 UPI':'💵 रोख'}</span></div>
+        <div class="hi-amt">₹${r.paid}</div>
       </div>
-      <div class="h-detail">
-        भाडे ₹${r.rent} + वीज ₹${r.elec} (${r.units} युनिट) + पाणी ₹${r.water}
-        ${r.prevBalance > 0 ? ` − मागील अधिक ₹${r.prevBalance}` : ''}
-        ${r.prevBalance < 0 ? ` + मागील बाकी ₹${Math.abs(r.prevBalance)}` : ''}
-        = देणे ₹${r.due.toFixed(0)}
-        ${r.diff > 0 ? ` | <span style="color:var(--green)">₹${r.diff} अधिक</span>` : ''}
-        ${r.diff < 0 ? ` | <span style="color:var(--red)">₹${Math.abs(r.diff)} बाकी</span>` : ''}
-        ${r.note ? `<br>📝 ${r.note}` : ''}
-        ${r.prevUnit ? `<br>मीटर: ${r.prevUnit} → ${r.currUnit}` : ''}
+      <div class="hi-det">
+        भाडे ₹${r.rent} + वीज ₹${r.elec}${r.units?` (${r.units} युनिट)`:''} + पाणी ₹${r.water}
+        ${r.prevBalance>0?` − अधिक ₹${r.prevBalance}`:''}${r.prevBalance<0?` + बाकी ₹${Math.abs(r.prevBalance)}`:''}
+        = देणे ₹${r.due}
+        ${r.diff>0?` | <span style="color:var(--green)">₹${r.diff} अधिक</span>`:''}
+        ${r.diff<0?` | <span style="color:var(--red)">₹${Math.abs(r.diff)} बाकी</span>`:''}
+        ${r.note?`<br>📝 ${r.note}`:''}
       </div>
     </div>
   `).join('');
 }
 
-// ═══════════════════════════════════════════════════
-// HOME DASHBOARD
-// ═══════════════════════════════════════════════════
-function renderHome() {
-  const now = new Date();
-  const m = now.getMonth(), y = now.getFullYear();
-  let monthTotal = 0, grandTotal = 0;
+function setHistYear(y){histYear=y;renderHistory();}
 
-  [1,2].forEach(n => {
-    const recs = payments[n-1] || [];
-    const t = tenants[n-1];
-    const tot = recs.reduce((s,r) => s+r.paid, 0);
-    const mt = recs.filter(r=>r.month===m&&r.year===y).reduce((s,r)=>s+r.paid,0);
-    monthTotal += mt;
-    grandTotal += tot;
-    document.getElementById('homeTotal'+n).textContent = '₹'+tot;
-    const bal = t.balance || 0;
-    const balEl = document.getElementById('homeBalance'+n);
-    balEl.textContent = bal >= 0 ? '+₹'+bal : '-₹'+Math.abs(bal);
-    balEl.style.color = bal >= 0 ? 'var(--green)' : 'var(--red)';
-    document.getElementById('homeDeposit'+n).textContent = t.deposit ? `💼 डिपॉझिट: ₹${t.deposit}` : '';
+// ═══════════ YEARLY REPORT ═══════════
+function renderYearly(){
+  const allRecs=[...payments[0],...payments[1]];
+  const years=[...new Set(allRecs.map(r=>r.year))].sort((a,b)=>b-a);
+  const div=document.getElementById('yearlyReport');
+  if(!years.length){div.innerHTML=`<div class="empty"><div class="ei">📊</div><p>अजून नोंदी नाहीत</p></div>`;return;}
+
+  div.innerHTML=years.map(y=>{
+    const r1=payments[0].filter(r=>r.year===y);
+    const r2=payments[1].filter(r=>r.year===y);
+    const t1=r1.reduce((s,r)=>s+r.paid,0);
+    const t2=r2.reduce((s,r)=>s+r.paid,0);
+    const tot=t1+t2;
+    const months=MR.map((m,i)=>{
+      const p1=r1.find(r=>r.month===i),p2=r2.find(r=>r.month===i);
+      if(!p1&&!p2)return '';
+      return `<div class="yr-row"><span>${m}</span><span style="font-size:12px;color:var(--text-light)">${[p1?tenants[0].name+' ₹'+p1.paid:'',p2?tenants[1].name+' ₹'+p2.paid:''].filter(Boolean).join(' + ')}</span><span style="font-weight:700">₹${(p1?.paid||0)+(p2?.paid||0)}</span></div>`;
+    }).filter(Boolean).join('');
+    return `<div class="year-report">
+      <div class="yr-head"><div class="yr-title">📅 ${y}</div><div class="yr-total">₹${tot}</div></div>
+      <div style="font-size:12px;color:var(--text-light);margin-bottom:8px">${tenants[0].name}: ₹${t1} &nbsp;|&nbsp; ${tenants[1].name}: ₹${t2}</div>
+      ${months}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════ OLD ENTRY MODAL ═══════════
+function openOldEntry(){
+  document.getElementById('oldModal').classList.add('show');
+  selOldTen(1);
+}
+function closeOldEntry(){document.getElementById('oldModal').classList.remove('show');}
+function selOldTen(n){
+  oldT=n;
+  document.getElementById('omBtn1').classList.toggle('selected',n===1);
+  document.getElementById('omBtn2').classList.toggle('selected',n===2);
+}
+function saveOldEntry(){
+  const paid=parseFloat(document.getElementById('omPaid').value)||0;
+  if(!paid){showToast('⚠️ रक्कम भरा');return;}
+  const month=parseInt(document.getElementById('omMonth').value);
+  const year=parseInt(document.getElementById('omYear').value);
+  const rent=parseFloat(document.getElementById('omRent').value)||0;
+  const elec=parseFloat(document.getElementById('omElec').value)||0;
+  const water=parseFloat(document.getElementById('omWater').value)||cfg.water;
+  const due=rent+elec+water;
+  const rec={id:Date.now(),month,year,prevUnit:0,currUnit:0,units:0,rent,elec,water,prevBalance:0,due,paid,diff:paid-due,method:document.getElementById('omMethod').value,note:document.getElementById('omNote').value.trim()||'वहीतून',date:'',isOld:true};
+  payments[oldT-1].push(rec);sv('payments',payments);
+  ['omRent','omElec','omWater','omPaid','omNote'].forEach(id=>document.getElementById(id).value='');
+  showToast('✅ जुनी नोंद जोडली!');
+  renderHome();renderYearly();
+}
+
+// ═══════════ SETTINGS ═══════════
+function saveSettings(){
+  cfg.elecRate=parseFloat(document.getElementById('setRate').value)||4;
+  cfg.water=parseFloat(document.getElementById('setWater').value)||100;
+  sv('cfg',cfg);showToast('✅ सेटिंग जतन झाली');
+}
+function saveTenant(n){
+  const i=n-1;
+  tenants[i].name=document.getElementById('t'+n+'n').value||'भाडेकरू '+n;
+  tenants[i].room=document.getElementById('t'+n+'r').value||'खोली '+n;
+  tenants[i].rent=parseFloat(document.getElementById('t'+n+'rent').value)||0;
+  tenants[i].deposit=parseFloat(document.getElementById('t'+n+'dep').value)||0;
+  tenants[i].startDate=document.getElementById('t'+n+'date').value||'';
+  sv('tenants',tenants);updateBtns();renderHome();
+  showToast('✅ भाडेकरू '+n+' जतन झाला');
+}
+
+// ═══════════ HOME ═══════════
+function renderHome(){
+  const now=new Date();const m=now.getMonth(),y=now.getFullYear();
+  let mTot=0,gTot=0;
+  [1,2].forEach(n=>{
+    const recs=payments[n-1]||[];const t=tenants[n-1];
+    const tot=recs.reduce((s,r)=>s+r.paid,0);
+    const mt=recs.filter(r=>r.month===m&&r.year===y).reduce((s,r)=>s+r.paid,0);
+    mTot+=mt;gTot+=tot;
+    document.getElementById('hTot'+n).textContent='₹'+tot;
+    const bal=t.balance||0;
+    const bel=document.getElementById('hBal'+n);
+    bel.textContent=(bal>=0?'+':'')+'₹'+bal;
+    bel.style.color=bal>=0?'var(--green)':'var(--red)';
+    document.getElementById('hDep'+n).textContent=t.deposit?'💼 डिपॉझिट: ₹'+t.deposit+(t.startDate?' | सुरू: '+t.startDate:''):'';
   });
-
-  document.getElementById('monthTotal').textContent = '₹'+monthTotal;
-  document.getElementById('grandTotal').textContent = '₹'+grandTotal;
-  updateTenantBtns();
+  document.getElementById('hMonthTotal').textContent='₹'+mTot;
+  document.getElementById('hGrandTotal').textContent='₹'+gTot;
+  updateBtns();
 }
 
-// ═══════════════════════════════════════════════════
-// SETTINGS
-// ═══════════════════════════════════════════════════
-function saveSettings() {
-  settings.elecRate = parseFloat(document.getElementById('setElecRate').value) || 4;
-  settings.water = parseFloat(document.getElementById('setWater').value) || 100;
-  save('settings', settings);
-  showToast('✅ सेटिंग जतन झाली');
-  calcBill();
+// ═══════════ EXPORT / IMPORT ═══════════
+function exportData(){
+  const data={tenants,payments,cfg,exportedAt:new Date().toISOString(),version:2};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const d=new Date();
+  a.href=url;
+  a.download=`bhade-backup-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
+  a.click();URL.revokeObjectURL(url);
+  showToast('✅ Backup file download झाली!');
 }
 
-function saveTenant(n) {
-  const i = n-1;
-  tenants[i].name = document.getElementById('t'+n+'Name').value || 'भाडेकरू '+n;
-  tenants[i].room = document.getElementById('t'+n+'Room').value || 'खोली '+n;
-  tenants[i].rent = parseFloat(document.getElementById('t'+n+'Rent').value) || 0;
-  tenants[i].deposit = parseFloat(document.getElementById('t'+n+'Deposit').value) || 0;
-  tenants[i].startDate = document.getElementById('t'+n+'StartDate').value || '';
-  save('tenants', tenants);
-  updateTenantBtns();
-  renderHome();
-  showToast('✅ भाडेकरू '+n+' माहिती जतन झाली');
+function importData(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.tenants||!data.payments){showToast('❌ चुकीची file!');return;}
+      if(!confirm('हे Restore केल्यास सध्याचा डेटा बदलेल. पुढे जायचे का?'))return;
+      tenants=data.tenants;payments=data.payments;cfg=data.cfg||cfg;
+      sv('tenants',tenants);sv('payments',payments);sv('cfg',cfg);
+      loadCfg();loadTenantForms();updateBtns();renderHome();renderYearly();
+      showToast('✅ Backup Restore झाला!');
+    }catch{showToast('❌ File वाचता आली नाही');}
+  };
+  reader.readAsText(file);
+  event.target.value='';
 }
 
-function clearAll() {
-  if (confirm('खरोखर सर्व माहिती मिटवायची आहे? हे पूर्ववत होणार नाही!')) {
-    localStorage.clear();
-    location.reload();
-  }
+function clearAll(){
+  if(confirm('खरोखर सर्व मिटवायचे? हे पूर्ववत होणार नाही!')){localStorage.clear();location.reload();}
 }
 
-// ═══════════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════════
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+// ═══════════ TOAST ═══════════
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ═══════════ PWA SERVICE WORKER ═══════════
+if('serviceWorker' in navigator){
+  const sw=`
+    const CACHE='bhade-v1';
+    const FILES=['/'];
+    self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));
+    self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
+  `;
+  const blob=new Blob([sw],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
 }
 </script>
 </body>
