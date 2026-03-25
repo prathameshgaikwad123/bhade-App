@@ -1,0 +1,68 @@
+{
+  "tenants": [
+    {
+      "name": "Balu mama",
+      "room": "खोली १",
+      "rent": 3500,
+      "deposit": 10000,
+      "startDate": "2026-03-01",
+      "balance": 258
+    },
+    {
+      "name": "Kalu mama",
+      "room": "खोली २",
+      "rent": 4500,
+      "deposit": 15000,
+      "startDate": "2026-03-10",
+      "balance": -34
+    }
+  ],
+  "payments": [
+    [
+      {
+        "id": 1774417187050,
+        "month": 2,
+        "year": 2026,
+        "prevUnit": 2029,
+        "currUnit": 2100,
+        "units": 71,
+        "rent": 3500,
+        "elec": 142,
+        "water": 100,
+        "prevBalance": 0,
+        "due": 3742,
+        "paid": 4000,
+        "diff": 258,
+        "method": "upi",
+        "note": "",
+        "date": "२५/३/२०२६"
+      }
+    ],
+    [
+      {
+        "id": 1774417228314,
+        "month": 2,
+        "year": 2026,
+        "prevUnit": 3100,
+        "currUnit": 3167,
+        "units": 67,
+        "rent": 4500,
+        "elec": 134,
+        "water": 100,
+        "prevBalance": 0,
+        "due": 4734,
+        "paid": 4700,
+        "diff": -34,
+        "method": "cash",
+        "note": "",
+        "date": "२५/३/२०२६"
+      }
+    ]
+  ],
+  "cfg": {
+    "elecRate": 4,
+    "water": 100
+  },
+  "at": "2026-03-25T06:29:12.253Z",
+  "v": 3
+}
