@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#b45309">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="भाडे व्यवस्थापन">
+<title>भाडे व्यवस्थापन</title>
+<link rel="manifest" href="data:application/json,{%22name%22:%22%E0%A4%AD%E0%A4%BE%E0%A4%A1%E0%A5%87%20%E0%A4%B5%E0%A5%8D%E0%A4%AF%E0%A4%B5%E0%A4%B8%E0%A5%8D%E0%A4%A5%E0%A4%BE%E0%A4%AA%E0%A4%A8%22,%22short_name%22:%22%E0%A4%AD%E0%A4%BE%E0%A4%A1%E0%A5%87%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23fef3c7%22,%22theme_color%22:%22%23b45309%22}">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;900&display=swap');
+
+  :root {
+    --saffron: #b45309;
+    --saffron-light: #d97706;
+    --saffron-pale: #fef3c7;
+    --saffron-bg: #fffbeb;
+    --green: #15803d;
+    --green-light: #dcfce7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --blue: #1d4ed8;
+    --blue-light: #dbeafe;
+    --text: #1c1917;
+    --text-light: #78716c;
+    --border: #e7d5a3;
+    --card: #ffffff;
+    --shadow: 0 2px 12px rgba(180,83,9,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    background: var(--saffron-bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 16px;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: linear-gradient(135deg, var(--saffron) 0%, var(--saffron-light) 100%);
+    color: white;
+    padding: 18px 16px 14px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  }
+  .header h1 { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; }
+  .header p { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+
+  /* ─── NAV TABS ─── */
+  .tabs {
+    display: flex;
+    background: white;
+    border-bottom: 3px solid var(--saffron-pale);
+    overflow-x: auto;
+    position: sticky; top: 70px; z-index: 99;
+  }
+  .tab {
+    flex: 1; min-width: 80px;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab.active { color: var(--saffron); border-color: var(--saffron); }
+  .tab .tab-icon { font-size: 18px; display: block; }
+
+  /* ─── PAGES ─── */
+  .page { display: none; padding: 16px; padding-bottom: 80px; }
+  .page.active { display: block; }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    border: 1.5px solid var(--border);
+  }
+  .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--saffron);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ─── TENANT SELECTOR ─── */
+  .tenant-btns { display: flex; gap: 10px; margin-bottom: 16px; }
+  .tenant-btn {
+    flex: 1; padding: 14px 8px;
+    border: 2.5px solid var(--border);
+    border-radius: 14px;
+    background: white;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .tenant-btn.selected {
+    border-color: var(--saffron);
+    background: var(--saffron-pale);
+    color: var(--saffron);
+  }
+  .tenant-btn .t-name { font-size: 17px; }
+  .tenant-btn .t-room { font-size: 11px; margin-top: 2px; opacity: 0.7; }
+
+  /* ─── FORM ─── */
+  .form-row { margin-bottom: 14px; }
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 6px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--text);
+    background: white;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-input:focus { outline: none; border-color: var(--saffron); }
+  .form-select {
+    width: 100%;
+    padding: 13px 14px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--text);
+    background: white;
+    -webkit-appearance: none;
+  }
+  .form-select:focus { outline: none; border-color: var(--saffron); }
+
+  /* ─── CALC BOX ─── */
+  .calc-box {
+    background: var(--saffron-pale);
+    border: 2px dashed var(--saffron-light);
+    border-radius: 14px;
+    padding: 16px;
+    margin: 16px 0;
+  }
+  .calc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 15px;
+    border-bottom: 1px solid var(--border);
+  }
+  .calc-row:last-child { border-bottom: none; }
+  .calc-row .label { color: var(--text-light); font-weight: 500; }
+  .calc-row .val { font-weight: 700; color: var(--text); }
+  .calc-row.total {
+    font-size: 18px;
+    padding-top: 10px;
+    margin-top: 4px;
+    border-top: 2.5px solid var(--saffron);
+  }
+  .calc-row.total .val { color: var(--saffron); font-size: 22px; }
+  .calc-row.credit .val { color: var(--green); }
+  .calc-row.debit .val { color: var(--red); }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 6px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--saffron); color: white; }
+  .btn-green { background: var(--green); color: white; }
+  .btn-outline {
+    background: white;
+    color: var(--saffron);
+    border: 2px solid var(--saffron);
+  }
+  .btn-sm {
+    width: auto;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 10px;
+    margin-top: 0;
+  }
+  .btn-red { background: var(--red); color: white; }
+
+  /* ─── SUMMARY BOXES ─── */
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .summary-box {
+    background: white;
+    border-radius: 14px;
+    padding: 14px 12px;
+    text-align: center;
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .summary-box .s-label { font-size: 12px; color: var(--text-light); font-weight: 500; }
+  .summary-box .s-val { font-size: 20px; font-weight: 900; color: var(--saffron); margin-top: 4px; }
+  .summary-box.green .s-val { color: var(--green); }
+  .summary-box.blue .s-val { color: var(--blue); }
+
+  /* ─── HISTORY LIST ─── */
+  .history-item {
+    background: white;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--saffron);
+    box-shadow: var(--shadow);
+  }
+  .history-item.upi { border-left-color: var(--blue); }
+  .history-item .h-top { display: flex; justify-content: space-between; align-items: center; }
+  .history-item .h-month { font-weight: 700; font-size: 15px; }
+  .history-item .h-amount { font-weight: 900; font-size: 18px; color: var(--green); }
+  .history-item .h-detail { font-size: 12px; color: var(--text-light); margin-top: 6px; line-height: 1.6; }
+  .history-item .h-method { font-size: 11px; background: var(--saffron-pale); color: var(--saffron); padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+  .history-item.upi .h-method { background: var(--blue-light); color: var(--blue); }
+
+  /* ─── TENANT SETUP ─── */
+  .setup-tenant {
+    background: white;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 14px;
+    border: 2px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .setup-tenant h3 { font-size: 16px; color: var(--saffron); margin-bottom: 14px; font-weight: 700; }
+
+  /* ─── BADGE ─── */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-red { background: var(--red-light); color: var(--red); }
+  .badge-orange { background: var(--saffron-pale); color: var(--saffron); }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 90px; left: 50%; transform: translateX(-50%);
+    background: #1c1917;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 600;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .toast.show { opacity: 1; }
+
+  /* ─── EMPTY STATE ─── */
+  .empty { text-align: center; padding: 40px 20px; color: var(--text-light); }
+  .empty .e-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty p { font-size: 15px; }
+
+  /* ─── DIVIDER ─── */
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  /* ─── SECTION LABEL ─── */
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    margin-top: 4px;
+  }
+
+  /* ─── INSTALL BANNER ─── */
+  .install-banner {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    color: white;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .install-banner .ib-icon { font-size: 28px; flex-shrink: 0; }
+  .install-banner .ib-text { font-size: 13px; line-height: 1.5; }
+  .install-banner .ib-text strong { font-size: 15px; }
+
+  /* responsive */
+  @media (max-width: 360px) {
+    .summary-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 19px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>🏠 भाडे व्यवस्थापन</h1>
+  <p>भाडेकरू नोंदणी व देखरेख</p>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="showPage('home')"><span class="tab-icon">🏠</span>मुख्य</div>
+  <div class="tab" onclick="showPage('payment')"><span class="tab-icon">💰</span>भाडे</div>
+  <div class="tab" onclick="showPage('history')"><span class="tab-icon">📋</span>इतिहास</div>
+  <div class="tab" onclick="showPage('settings')"><span class="tab-icon">⚙️</span>सेटिंग</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PAGE: HOME (Dashboard) -->
+<!-- ═══════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <div class="install-banner" id="installBanner">
+    <div class="ib-icon">📱</div>
+    <div class="ib-text">
+      <strong>मोबाईलवर App जोडा</strong><br>
+      ब्राउझरमध्ये Share बटण दाबा → "Add to Home Screen" निवडा → App तयार!
+    </div>
+  </div>
+
+  <!-- Overall Summary -->
+  <div class="section-label">एकूण सारांश</div>
+  <div class="summary-grid">
+    <div class="summary-box">
+      <div class="s-label">या महिन्याचे उत्पन्न</div>
+      <div class="s-val" id="monthTotal">₹0</div>
+    </div>
+    <div class="summary-box green">
+      <div class="s-label">एकूण उत्पन्न</div>
+      <div class="s-val" id="grandTotal">₹0</div>
+    </div>
+  </div>
+
+  <!-- Tenant 1 card -->
+  <div class="card" id="homeCard1">
+    <div class="card-title"><span>👤</span> <span id="homeName1">भाडेकरू १</span></div>
+    <div class="summary-grid">
+      <div class="summary-box">
+        <div class="s-label">एकूण भाडे</div>
+        <div class="s-val" id="homeTotal1">₹0</div>
+      </div>
+      <div class="summary-box blue">
+        <div class="s-label">शिल्लक / अधिक</div>
+        <div class="s-val" id="homeBalance1">₹0</div>
+      </div>
+    </div>
+    <div style="font-size:13px; color:var(--text-light)" id="homeDeposit1"></div>
+  </div>
+
+  <!-- Tenant 2 card -->
+  <div class="card" id="homeCard2">
+    <div class="card-title"><span>👤</span> <span id="homeName2">भाडेकरू २</span></div>
+    <div class="summary-grid">
+      <div class="summary-box">
+        <div class="s-label">एकूण भाडे</div>
+        <div class="s-val" id="homeTotal2">₹0</div>
+      </div>
+      <div class="summary-box blue">
+        <div class="s-label">शिल्लक / अधिक</div>
+        <div class="s-val" id="homeBalance2">₹0</div>
+      </div>
+    </div>
+    <div style="font-size:13px; color:var(--text-light)" id="homeDeposit2"></div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PAGE: PAYMENT -->
+<!-- ═══════════════════════════════════════ -->
+<div class="page" id="page-payment">
+
+  <div class="card">
+    <div class="card-title">💰 भाडे नोंद करा</div>
+
+    <!-- Tenant selector -->
+    <div class="form-row">
+      <div class="form-label">भाडेकरू निवडा</div>
+      <div class="tenant-btns">
+        <div class="tenant-btn selected" id="tenBtn1" onclick="selectTenant(1)">
+          <div class="t-name" id="tenBtn1Name">भाडेकरू १</div>
+          <div class="t-room" id="tenBtn1Room">खोली १</div>
+        </div>
+        <div class="tenant-btn" id="tenBtn2" onclick="selectTenant(2)">
+          <div class="t-name" id="tenBtn2Name">भाडेकरू २</div>
+          <div class="t-room" id="tenBtn2Room">खोली २</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Balance notice -->
+    <div id="balanceNotice" style="display:none; margin-bottom:12px;"></div>
+
+    <!-- Month / Year -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div class="form-row">
+        <label class="form-label">महिना</label>
+        <select class="form-select" id="payMonth"></select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">वर्ष</label>
+        <select class="form-select" id="payYear"></select>
+      </div>
+    </div>
+
+    <!-- Electricity -->
+    <div class="form-row">
+      <label class="form-label">⚡ मागील मीटर रीडिंग (युनिट)</label>
+      <input class="form-input" type="number" id="prevUnit" placeholder="उदा. 1213" oninput="calcBill()">
+    </div>
+    <div class="form-row">
+      <label class="form-label">⚡ या महिन्याचे मीटर रीडिंग (युनिट)</label>
+      <input class="form-input" type="number" id="currUnit" placeholder="उदा. 1290" oninput="calcBill()">
+    </div>
+
+    <!-- Payment -->
+    <div class="form-row">
+      <label class="form-label">रोख / UPI</label>
+      <select class="form-select" id="payMethod">
+        <option value="cash">💵 रोख (Cash)</option>
+        <option value="upi">📱 UPI</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label class="form-label">भाडेकरूने दिलेली रक्कम (₹)</label>
+      <input class="form-input" type="number" id="paidAmount" placeholder="उदा. 4000" oninput="calcBill()">
+    </div>
+
+    <!-- CALCULATION BOX -->
+    <div class="calc-box" id="calcBox" style="display:none;">
+      <div style="font-size:13px; font-weight:700; color:var(--saffron); margin-bottom:10px;">📊 हिशोब</div>
+      <div class="calc-row"><span class="label">मासिक भाडे</span><span class="val" id="c-rent">₹0</span></div>
+      <div class="calc-row"><span class="label">वीज बिल (<span id="c-units">0</span> युनिट × ₹<span id="c-rate">4</span>)</span><span class="val" id="c-elec">₹0</span></div>
+      <div class="calc-row"><span class="label">पाणी शुल्क</span><span class="val" id="c-water">₹0</span></div>
+      <div class="calc-row credit" id="cr-prev-row" style="display:none;"><span class="label">मागील अधिक रक्कम</span><span class="val" id="c-prev-credit">-₹0</span></div>
+      <div class="calc-row total"><span class="label">देणे आहे</span><span class="val" id="c-due">₹0</span></div>
+      <div class="divider"></div>
+      <div class="calc-row"><span class="label">भाडेकरूने दिले</span><span class="val" id="c-paid">₹0</span></div>
+      <div class="calc-row credit" id="cr-extra-row" style="display:none;"><span class="label">✅ अधिक दिले (पुढील महिन्यात वजा)</span><span class="val credit" id="c-extra">₹0</span></div>
+      <div class="calc-row debit" id="cr-less-row" style="display:none;"><span class="label">⚠️ कमी दिले (पुढील महिन्यात भरणे)</span><span class="val" id="c-less">₹0</span></div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">नोंद (ऐच्छिक)</label>
+      <input class="form-input" type="text" id="payNote" placeholder="काही विशेष असल्यास लिहा...">
+    </div>
+
+    <button class="btn btn-green" onclick="savePayment()">✅ जतन करा (Save)</button>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PAGE: HISTORY -->
+<!-- ═══════════════════════════════════════ -->
+<div class="page" id="page-history">
+
+  <!-- Tenant selector -->
+  <div class="tenant-btns">
+    <div class="tenant-btn selected" id="histBtn1" onclick="selectHistTenant(1)">
+      <div class="t-name" id="histBtn1Name">भाडेकरू १</div>
+    </div>
+    <div class="tenant-btn" id="histBtn2" onclick="selectHistTenant(2)">
+      <div class="t-name" id="histBtn2Name">भाडेकरू २</div>
+    </div>
+  </div>
+
+  <div id="histSummary"></div>
+  <div id="histList"></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PAGE: SETTINGS -->
+<!-- ═══════════════════════════════════════ -->
+<div class="page" id="page-settings">
+
+  <div class="card">
+    <div class="card-title">⚙️ सामान्य सेटिंग</div>
+    <div class="form-row">
+      <label class="form-label">वीज दर (प्रति युनिट ₹)</label>
+      <input class="form-input" type="number" id="setElecRate" value="4" step="0.5">
+    </div>
+    <div class="form-row">
+      <label class="form-label">पाणी शुल्क (दरमहा ₹)</label>
+      <input class="form-input" type="number" id="setWater" value="100">
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="saveSettings()" style="width:auto; margin-top:0;">जतन करा</button>
+  </div>
+
+  <!-- Tenant 1 Setup -->
+  <div class="setup-tenant">
+    <h3>👤 भाडेकरू १ माहिती</h3>
+    <div class="form-row">
+      <label class="form-label">नाव</label>
+      <input class="form-input" type="text" id="t1Name" placeholder="नाव टाका">
+    </div>
+    <div class="form-row">
+      <label class="form-label">खोली / फ्लॅट नंबर</label>
+      <input class="form-input" type="text" id="t1Room" placeholder="उदा. खोली १">
+    </div>
+    <div class="form-row">
+      <label class="form-label">मासिक भाडे (₹)</label>
+      <input class="form-input" type="number" id="t1Rent" placeholder="उदा. 3500">
+    </div>
+    <div class="form-row">
+      <label class="form-label">भाडे सुरू दिनांक</label>
+      <input class="form-input" type="date" id="t1StartDate">
+    </div>
+    <div class="form-row">
+      <label class="form-label">डिपॉझिट रक्कम (₹)</label>
+      <input class="form-input" type="number" id="t1Deposit" placeholder="उदा. 7000">
+    </div>
+    <button class="btn btn-primary" onclick="saveTenant(1)">💾 जतन करा</button>
+  </div>
+
+  <!-- Tenant 2 Setup -->
+  <div class="setup-tenant">
+    <h3>👤 भाडेकरू २ माहिती</h3>
+    <div class="form-row">
+      <label class="form-label">नाव</label>
+      <input class="form-input" type="text" id="t2Name" placeholder="नाव टाका">
+    </div>
+    <div class="form-row">
+      <label class="form-label">खोली / फ्लॅट नंबर</label>
+      <input class="form-input" type="text" id="t2Room" placeholder="उदा. खोली २">
+    </div>
+    <div class="form-row">
+      <label class="form-label">मासिक भाडे (₹)</label>
+      <input class="form-input" type="number" id="t2Rent" placeholder="उदा. 3500">
+    </div>
+    <div class="form-row">
+      <label class="form-label">भाडे सुरू दिनांक</label>
+      <input class="form-input" type="date" id="t2StartDate">
+    </div>
+    <div class="form-row">
+      <label class="form-label">डिपॉझिट रक्कम (₹)</label>
+      <input class="form-input" type="number" id="t2Deposit" placeholder="उदा. 7000">
+    </div>
+    <button class="btn btn-primary" onclick="saveTenant(2)">💾 जतन करा</button>
+  </div>
+
+  <div class="card" style="border-color:var(--red-light);">
+    <div class="card-title" style="color:var(--red);">⚠️ सर्व डेटा मिटवा</div>
+    <p style="font-size:13px; color:var(--text-light); margin-bottom:12px;">सर्व भाडे नोंदी आणि भाडेकरू माहिती मिटेल. हे पूर्ववत होणार नाही!</p>
+    <button class="btn btn-red" onclick="clearAll()">🗑️ सर्व मिटवा</button>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// STATE & STORAGE
+// ═══════════════════════════════════════════════════
+const MONTHS_MR = ['जानेवारी','फेब्रुवारी','मार्च','एप्रिल','मे','जून','जुलै','ऑगस्ट','सप्टेंबर','ऑक्टोबर','नोव्हेंबर','डिसेंबर'];
+
+function load(key, def) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; }
+}
+function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+let settings = load('settings', { elecRate: 4, water: 100 });
+let tenants = load('tenants', [
+  { name: 'भाडेकरू १', room: 'खोली १', rent: 3500, deposit: 0, startDate: '', balance: 0 },
+  { name: 'भाडेकरू २', room: 'खोली २', rent: 3500, deposit: 0, startDate: '', balance: 0 }
+]);
+let payments = load('payments', [[], []]); // payments[0] = tenant1, payments[1] = tenant2
+
+let selTenant = 1; // 1 or 2
+let histTenant = 1;
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+window.onload = function() {
+  populateMonthYear();
+  loadSettings();
+  loadTenantForms();
+  updateTenantBtns();
+  renderHome();
+  selectTenant(1);
+  selectHistTenant(1);
+};
+
+function populateMonthYear() {
+  const mSel = document.getElementById('payMonth');
+  const ySel = document.getElementById('payYear');
+  MONTHS_MR.forEach((m, i) => {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = m;
+    mSel.appendChild(opt);
+  });
+  const now = new Date();
+  mSel.value = now.getMonth();
+  const yr = now.getFullYear();
+  for (let y = yr-2; y <= yr+1; y++) {
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y;
+    ySel.appendChild(opt);
+  }
+  ySel.value = yr;
+}
+
+function loadSettings() {
+  document.getElementById('setElecRate').value = settings.elecRate;
+  document.getElementById('setWater').value = settings.water;
+}
+
+function loadTenantForms() {
+  ['1','2'].forEach((n, i) => {
+    const t = tenants[i];
+    document.getElementById('t'+n+'Name').value = t.name || '';
+    document.getElementById('t'+n+'Room').value = t.room || '';
+    document.getElementById('t'+n+'Rent').value = t.rent || '';
+    document.getElementById('t'+n+'Deposit').value = t.deposit || '';
+    document.getElementById('t'+n+'StartDate').value = t.startDate || '';
+  });
+}
+
+function updateTenantBtns() {
+  [1,2].forEach(n => {
+    const t = tenants[n-1];
+    document.getElementById('tenBtn'+n+'Name').textContent = t.name;
+    document.getElementById('tenBtn'+n+'Room').textContent = t.room;
+    document.getElementById('histBtn'+n+'Name').textContent = t.name;
+    document.getElementById('homeName'+n).textContent = t.name;
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// PAGE NAVIGATION
+// ═══════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const tabs = ['home','payment','history','settings'];
+  document.querySelectorAll('.tab')[tabs.indexOf(id)].classList.add('active');
+  if (id === 'home') renderHome();
+  if (id === 'history') renderHistory();
+}
+
+// ═══════════════════════════════════════════════════
+// TENANT SELECT (PAYMENT)
+// ═══════════════════════════════════════════════════
+function selectTenant(n) {
+  selTenant = n;
+  document.getElementById('tenBtn1').classList.toggle('selected', n===1);
+  document.getElementById('tenBtn2').classList.toggle('selected', n===2);
+  showBalanceNotice();
+  calcBill();
+}
+
+function showBalanceNotice() {
+  const t = tenants[selTenant-1];
+  const nb = document.getElementById('balanceNotice');
+  if (t.balance > 0) {
+    nb.style.display = 'block';
+    nb.innerHTML = `<div style="background:var(--green-light);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--green);font-weight:600;">
+      ✅ मागील महिन्याची अधिक रक्कम: <strong>₹${t.balance}</strong> — या महिन्याच्या भाड्यातून वजा होईल
+    </div>`;
+  } else if (t.balance < 0) {
+    nb.style.display = 'block';
+    nb.innerHTML = `<div style="background:var(--red-light);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--red);font-weight:600;">
+      ⚠️ मागील महिन्याची बाकी रक्कम: <strong>₹${Math.abs(t.balance)}</strong> — या महिन्यात जोडली जाईल
+    </div>`;
+  } else {
+    nb.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// CALCULATION
+// ═══════════════════════════════════════════════════
+function calcBill() {
+  const t = tenants[selTenant-1];
+  const prev = parseFloat(document.getElementById('prevUnit').value) || 0;
+  const curr = parseFloat(document.getElementById('currUnit').value) || 0;
+  const paid = parseFloat(document.getElementById('paidAmount').value) || 0;
+  const units = Math.max(0, curr - prev);
+  const elecAmt = units * settings.elecRate;
+  const waterAmt = settings.water;
+  const rentAmt = t.rent || 0;
+  const prevBalance = t.balance || 0; // positive = credit, negative = due
+  const due = rentAmt + elecAmt + waterAmt - prevBalance;
+  const diff = paid - due;
+
+  if (!rentAmt) { document.getElementById('calcBox').style.display = 'none'; return; }
+
+  document.getElementById('calcBox').style.display = 'block';
+  document.getElementById('c-rent').textContent = '₹'+rentAmt;
+  document.getElementById('c-units').textContent = units;
+  document.getElementById('c-rate').textContent = settings.elecRate;
+  document.getElementById('c-elec').textContent = '₹'+elecAmt;
+  document.getElementById('c-water').textContent = '₹'+waterAmt;
+  document.getElementById('c-due').textContent = '₹'+Math.max(0,due);
+  document.getElementById('c-paid').textContent = '₹'+paid;
+
+  const prevRow = document.getElementById('cr-prev-row');
+  if (prevBalance > 0) {
+    prevRow.style.display = 'flex';
+    document.getElementById('c-prev-credit').textContent = '-₹'+prevBalance;
+  } else if (prevBalance < 0) {
+    prevRow.style.display = 'flex';
+    document.getElementById('c-prev-credit').textContent = '+₹'+Math.abs(prevBalance)+' (बाकी)';
+  } else {
+    prevRow.style.display = 'none';
+  }
+
+  document.getElementById('cr-extra-row').style.display = diff > 0 ? 'flex' : 'none';
+  document.getElementById('cr-less-row').style.display = diff < 0 ? 'flex' : 'none';
+  if (diff > 0) document.getElementById('c-extra').textContent = '₹'+diff;
+  if (diff < 0) document.getElementById('c-less').textContent = '₹'+Math.abs(diff);
+}
+
+// ═══════════════════════════════════════════════════
+// SAVE PAYMENT
+// ═══════════════════════════════════════════════════
+function savePayment() {
+  const t = tenants[selTenant-1];
+  const prev = parseFloat(document.getElementById('prevUnit').value) || 0;
+  const curr = parseFloat(document.getElementById('currUnit').value) || 0;
+  const paid = parseFloat(document.getElementById('paidAmount').value) || 0;
+  const method = document.getElementById('payMethod').value;
+  const note = document.getElementById('payNote').value.trim();
+  const month = parseInt(document.getElementById('payMonth').value);
+  const year = parseInt(document.getElementById('payYear').value);
+
+  if (!t.rent) { showToast('⚠️ आधी सेटिंगमध्ये भाडे रक्कम भरा'); return; }
+  if (!paid) { showToast('⚠️ भाडेकरूने दिलेली रक्कम भरा'); return; }
+
+  const units = Math.max(0, curr - prev);
+  const elecAmt = units * settings.elecRate;
+  const waterAmt = settings.water;
+  const prevBalance = t.balance || 0;
+  const due = t.rent + elecAmt + waterAmt - prevBalance;
+  const diff = paid - due;
+
+  const record = {
+    id: Date.now(),
+    month, year,
+    prevUnit: prev, currUnit: curr, units,
+    rent: t.rent, elec: elecAmt, water: waterAmt,
+    prevBalance, due, paid, diff,
+    method, note,
+    date: new Date().toLocaleDateString('mr-IN')
+  };
+
+  payments[selTenant-1].push(record);
+  save('payments', payments);
+
+  // Update balance
+  tenants[selTenant-1].balance = diff; // positive = credit (overpaid), negative = still owed
+  save('tenants', tenants);
+
+  // Reset form
+  document.getElementById('prevUnit').value = curr; // auto-fill for next month
+  document.getElementById('currUnit').value = '';
+  document.getElementById('paidAmount').value = '';
+  document.getElementById('payNote').value = '';
+  document.getElementById('calcBox').style.display = 'none';
+  showBalanceNotice();
+
+  const msg = diff > 0 ? `✅ जतन झाले! ₹${diff} अधिक — पुढील महिन्यात वजा होईल` :
+              diff < 0 ? `✅ जतन झाले! ₹${Math.abs(diff)} बाकी — पुढील महिन्यात जोडले जाईल` :
+              '✅ भाडे नोंद झाली!';
+  showToast(msg);
+  renderHome();
+}
+
+// ═══════════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════════
+function selectHistTenant(n) {
+  histTenant = n;
+  document.getElementById('histBtn1').classList.toggle('selected', n===1);
+  document.getElementById('histBtn2').classList.toggle('selected', n===2);
+  renderHistory();
+}
+
+function renderHistory() {
+  const recs = payments[histTenant-1] || [];
+  const t = tenants[histTenant-1];
+  const total = recs.reduce((s,r) => s+r.paid, 0);
+  const sumDiv = document.getElementById('histSummary');
+  sumDiv.innerHTML = `
+    <div class="summary-grid">
+      <div class="summary-box">
+        <div class="s-label">एकूण नोंदी</div>
+        <div class="s-val">${recs.length}</div>
+      </div>
+      <div class="summary-box green">
+        <div class="s-label">एकूण मिळाले</div>
+        <div class="s-val">₹${total}</div>
+      </div>
+    </div>
+    ${t.deposit ? `<div style="font-size:13px;color:var(--text-light);margin-bottom:8px;">💼 डिपॉझिट: ₹${t.deposit} | भाडे सुरू: ${t.startDate||'—'}</div>` : ''}
+  `;
+
+  const listDiv = document.getElementById('histList');
+  if (!recs.length) {
+    listDiv.innerHTML = `<div class="empty"><div class="e-icon">📋</div><p>अजून कोणतीही नोंद नाही</p></div>`;
+    return;
+  }
+
+  listDiv.innerHTML = [...recs].reverse().map(r => `
+    <div class="history-item ${r.method==='upi'?'upi':''}">
+      <div class="h-top">
+        <div>
+          <span class="h-month">${MONTHS_MR[r.month]} ${r.year}</span>
+          <span class="h-method">${r.method==='upi'?'📱 UPI':'💵 रोख'}</span>
+        </div>
+        <div class="h-amount">₹${r.paid}</div>
+      </div>
+      <div class="h-detail">
+        भाडे ₹${r.rent} + वीज ₹${r.elec} (${r.units} युनिट) + पाणी ₹${r.water}
+        ${r.prevBalance > 0 ? ` − मागील अधिक ₹${r.prevBalance}` : ''}
+        ${r.prevBalance < 0 ? ` + मागील बाकी ₹${Math.abs(r.prevBalance)}` : ''}
+        = देणे ₹${r.due.toFixed(0)}
+        ${r.diff > 0 ? ` | <span style="color:var(--green)">₹${r.diff} अधिक</span>` : ''}
+        ${r.diff < 0 ? ` | <span style="color:var(--red)">₹${Math.abs(r.diff)} बाकी</span>` : ''}
+        ${r.note ? `<br>📝 ${r.note}` : ''}
+        ${r.prevUnit ? `<br>मीटर: ${r.prevUnit} → ${r.currUnit}` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// HOME DASHBOARD
+// ═══════════════════════════════════════════════════
+function renderHome() {
+  const now = new Date();
+  const m = now.getMonth(), y = now.getFullYear();
+  let monthTotal = 0, grandTotal = 0;
+
+  [1,2].forEach(n => {
+    const recs = payments[n-1] || [];
+    const t = tenants[n-1];
+    const tot = recs.reduce((s,r) => s+r.paid, 0);
+    const mt = recs.filter(r=>r.month===m&&r.year===y).reduce((s,r)=>s+r.paid,0);
+    monthTotal += mt;
+    grandTotal += tot;
+    document.getElementById('homeTotal'+n).textContent = '₹'+tot;
+    const bal = t.balance || 0;
+    const balEl = document.getElementById('homeBalance'+n);
+    balEl.textContent = bal >= 0 ? '+₹'+bal : '-₹'+Math.abs(bal);
+    balEl.style.color = bal >= 0 ? 'var(--green)' : 'var(--red)';
+    document.getElementById('homeDeposit'+n).textContent = t.deposit ? `💼 डिपॉझिट: ₹${t.deposit}` : '';
+  });
+
+  document.getElementById('monthTotal').textContent = '₹'+monthTotal;
+  document.getElementById('grandTotal').textContent = '₹'+grandTotal;
+  updateTenantBtns();
+}
+
+// ═══════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════
+function saveSettings() {
+  settings.elecRate = parseFloat(document.getElementById('setElecRate').value) || 4;
+  settings.water = parseFloat(document.getElementById('setWater').value) || 100;
+  save('settings', settings);
+  showToast('✅ सेटिंग जतन झाली');
+  calcBill();
+}
+
+function saveTenant(n) {
+  const i = n-1;
+  tenants[i].name = document.getElementById('t'+n+'Name').value || 'भाडेकरू '+n;
+  tenants[i].room = document.getElementById('t'+n+'Room').value || 'खोली '+n;
+  tenants[i].rent = parseFloat(document.getElementById('t'+n+'Rent').value) || 0;
+  tenants[i].deposit = parseFloat(document.getElementById('t'+n+'Deposit').value) || 0;
+  tenants[i].startDate = document.getElementById('t'+n+'StartDate').value || '';
+  save('tenants', tenants);
+  updateTenantBtns();
+  renderHome();
+  showToast('✅ भाडेकरू '+n+' माहिती जतन झाली');
+}
+
+function clearAll() {
+  if (confirm('खरोखर सर्व माहिती मिटवायची आहे? हे पूर्ववत होणार नाही!')) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
